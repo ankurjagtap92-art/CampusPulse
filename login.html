@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Faculty Login – CampusPulse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root {
+      /* Premium Dark Palette */
+      --bg-dark: #050a14;
+      --card-bg: rgba(20, 25, 40, 0.6);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --glass-shine: rgba(255, 255, 255, 0.05);
+      --text-main: #ffffff;
+      --text-muted: #a0aab5;
+      
+      --primary-accent: #4dabf7;
+      
+      /* Neon Status */
+      --status-available: #00ffa3;
+      --status-busy: #ffbf00;
+      --status-unavailable: #ff4d4d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top right, #1c2e4a, #050a14 60%);
+      color: var(--text-main);
+      padding: 20px;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Background Particles */
+    .particles {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+    }
+    .particle {
+      position: absolute; background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+      animation: floatUp 15s infinite linear;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      50% { opacity: 0.5; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .container { max-width: 1200px; width: 100%; margin: 0 auto; position: relative; z-index: 10; }
+
+    /* HEADER */
+    header {
+      position: relative;
+      margin-bottom: 3rem;
+      padding: 2rem 2.5rem;
+      border-radius: 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      text-align: center;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.1s;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle { color: var(--text-muted); font-weight: 300; }
+
+    .admin-info {
+      position: absolute; top: 15px; right: 20px;
+      font-size: 0.8rem; padding: 6px 14px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px; color: var(--text-muted);
+      border: 1px solid var(--card-border);
+    }
+
+    /* LAYOUT GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2.5rem;
+      perspective: 1000px;
+    }
+
+    /* CARDS COMMON */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255,255,255,0.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    /* LOGIN CARD */
+    .login-card h2 {
+      font-family: 'Outfit', sans-serif; font-size: 1.8rem;
+      margin-bottom: 2rem; color: #fff;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 16px 20px;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-family: inherit; font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: var(--primary-accent);
+      box-shadow: 0 0 15px rgba(77, 171, 247, 0.3);
+      background: rgba(0,0,0,0.5);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary-accent), #357abd);
+      color: #fff;
+      font-weight: 700; font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    .login-btn::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: 0.5s; transform: skewX(-25deg);
+    }
+    .login-btn:hover::after { left: 200%; }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(77, 171, 247, 0.4); }
+
+    .login-status {
+      margin-top: 1.5rem;
+      font-size: 0.9rem; min-height: 1.5em;
+      font-weight: 600;
+      text-align: center;
+    }
+    .login-status.ok { color: var(--status-available); text-shadow: 0 0 10px var(--status-available); }
+    .login-status.error { color: var(--status-unavailable); text-shadow: 0 0 10px var(--status-unavailable); }
+
+    /* FACULTY PANEL */
+    .faculty-panel { min-height: 400px; display: flex; flex-direction: column; justify-content: center; }
+    
+    .faculty-header {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin-bottom: 2rem; border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+    }
+
+    .avatar {
+      width: 80px; height: 80px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary-accent), #2c3e50);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 2rem;
+      box-shadow: 0 0 20px rgba(77, 171, 247, 0.4);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .faculty-name { font-weight: 700; font-size: 1.5rem; color: #fff; }
+    .faculty-dept { color: var(--text-muted); font-size: 1rem; }
+
+    /* STATUS CONTROLS */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 1.5rem; color: #000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    .status-available { background: var(--status-available); box-shadow: 0 0 15px var(--status-available); animation: pulse 2s infinite; }
+    .status-busy { background: var(--status-busy); box-shadow: 0 0 15px var(--status-busy); }
+    .status-unavailable { background: var(--status-unavailable); box-shadow: 0 0 15px var(--status-unavailable); }
+
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+    .status-buttons { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+
+    .status-btn {
+      flex: 1; min-width: 120px;
+      padding: 14px; border: none; border-radius: 12px;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      color: #fff; transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+    }
+
+    .status-btn:hover { transform: translateY(-3px); }
+    
+    /* Button Specific Styles */
+    .status-btn.available:hover { background: var(--status-available); color: #000; box-shadow: 0 0 15px var(--status-available); }
+    .status-btn.busy:hover { background: var(--status-busy); color: #000; box-shadow: 0 0 15px var(--status-busy); }
+    .status-btn.unavailable:hover { background: var(--status-unavailable); color: #fff; box-shadow: 0 0 15px var(--status-unavailable); }
+
+    .message-box {
+      padding: 1.2rem; border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border-left: 4px solid var(--primary-accent);
+      font-size: 1rem; color: #d0d0d0; margin-bottom: 0.5rem;
+    }
+
+    .last-seen { font-size: 0.85rem; color: var(--text-muted); }
+
+    .panel-placeholder {
+      text-align: center; color: var(--text-muted);
+      font-size: 1.1rem; padding: 3rem 1rem;
+      background: rgba(255,255,255,0.02); border-radius: 12px;
+      border: 1px dashed var(--card-border);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      body { overflow-y: auto; }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <header id="headerCard">
+      <div class="admin-info" id="adminInfo"><i class="fas fa-user-slash"></i> Disconnected</div>
+      <h1 class="header-title"><i class="fas fa-fingerprint"></i> Faculty Portal</h1>
+      <p class="header-subtitle">Secure Access Control • CampusPulse System</p>
+    </header>
+
+    <div class="main-grid">
+      <!-- LEFT: Login -->
+      <div class="glass-card login-card" id="loginCard">
+        <h2><i class="fas fa-terminal"></i> Access Node</h2>
+        <input id="usernameInput" class="login-input" type="text" placeholder="Faculty ID (e.g. faculty1)" />
+        <input id="passwordInput" class="login-input" type="password" placeholder="Security Key (Password)" />
+        <button id="loginBtn" class="login-btn">Initialize Session</button>
+        <div id="loginStatus" class="login-status"></div>
+      </div>
+
+      <!-- RIGHT: Faculty panel -->
+      <div class="glass-card faculty-panel" id="facultyPanel" style="min-height: auto;">
+        <div class="panel-placeholder">
+          <i class="fas fa-lock" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+          Authenticate to access controls.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYRHFVP6sHvSY2cf99I5nUC8FwfYyEruY",
+      authDomain: "campuspulse-ed90f.firebaseapp.com",
+      databaseURL: "https://campuspulse-ed90f-default-rtdb.firebaseio.com",
+      projectId: "campuspulse-ed90f",
+      storageBucket: "campuspulse-ed90f.firebasestorage.app",
+      messagingSenderId: "361434603294",
+      appId: "1:361434603294:web:59723189cd1a96415bf30f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const usernameInput = document.getElementById('usernameInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn       = document.getElementById('loginBtn');
+    const loginStatus    = document.getElementById('loginStatus');
+    const facultyPanel   = document.getElementById('facultyPanel');
+    const adminInfo      = document.getElementById('adminInfo');
+    const loginCard     = document.getElementById('loginCard');
+
+    let currentFacultyId   = null;
+    let currentFacultyData = null;
+
+    // Initialize Particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      const size = Math.random() * 4 + 1;
+      p.style.width = `${size}px`; p.style.height = `${size}px`;
+      p.style.left = `${Math.random() * 100}vw`;
+      p.style.animationDuration = `${Math.random() * 10 + 10}s`;
+      p.style.animationDelay = `${Math.random() * 5}s`;
+      particlesContainer.appendChild(p);
+    }
+
+    // 3D Tilt Effect for Cards
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 40;
+      const y = (window.innerHeight / 2 - e.pageY) / 40;
+      
+      if(loginCard) loginCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+      if(facultyPanel) facultyPanel.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+      const header = document.getElementById('headerCard');
+      if(header) header.style.transform = `rotateY(${x * 0.5}deg) rotateX(${y * 0.5}deg)`;
+    });
+
+    function setStatusMessage(text, ok) {
+      loginStatus.textContent = text;
+      loginStatus.className = 'login-status ' + (ok ? 'ok' : 'error');
+    }
+
+    function renderFacultyPanel() {
+      if (!currentFacultyData) {
+        facultyPanel.innerHTML = `
+          <div class="panel-placeholder">
+            <i class="fas fa-lock" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+            Authenticate to access controls.
+          </div>`;
+        return;
+      }
+
+      const f = currentFacultyData;
+      const status = (f.status || '').toLowerCase().trim();
+      const statusClass =
+        status === 'available' ? 'status-available' :
+        status === 'busy' ? 'status-busy' :
+        'status-unavailable';
+
+      facultyPanel.innerHTML = `
+        <div class="faculty-header">
+          <div class="avatar">${(f.name || currentFacultyId || '?').charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="faculty-name">${f.name || 'Unknown Faculty'}</div>
+            <div class="faculty-dept">${f.dept || 'Faculty of Engineering'}</div>
+          </div>
+        </div>
+
+        <div class="status-badge ${statusClass}">
+          <i class="fas fa-wifi"></i> ${(status || 'unavailable').toUpperCase()}
+        </div>
+
+        <div class="status-buttons">
+          <button class="status-btn available" onclick="updateStatus('available')">
+            <i class="fas fa-check-circle"></i> Available
+          </button>
+          <button class="status-btn busy" onclick="updateStatus('busy')">
+            <i class="fas fa-circle-notch"></i> Busy
+          </button>
+          <button class="status-btn unavailable" onclick="updateStatus('unavailable')">
+            <i class="fas fa-times-circle"></i> Away
+          </button>
+        </div>
+
+        <div class="message-box">
+          ${f.message || 'No status message set.'}
+        </div>
+
+        <div class="last-seen">
+          <i class="fas fa-history"></i> Last Sync: ${f.lastseen || f.lastSeen || 'Never'}
+        </div>
+      `;
+    }
+
+    loginBtn.addEventListener('click', () => {
+      const id   = usernameInput.value.trim();
+      const pass = passwordInput.value.trim();
+
+      if (!id || !pass) {
+        setStatusMessage('Credentials required.', false);
+        return;
+      }
+
+      loginBtn.textContent = 'Verifying...';
+      loginBtn.style.opacity = '0.7';
+
+      const ref = db.ref('faculty/' + id);
+      ref.once('value').then((snapshot) => {
+        const data = snapshot.val();
+
+        if (!data) {
+          setStatusMessage('Access Denied: ID not found.', false);
+          loginBtn.textContent = 'Initialize Session';
+          loginBtn.style.opacity = '1';
+          return;
+        }
+
+        const dbPassword = String(data.password || '').trim();
+
+        if (dbPassword !== pass) {
+          setStatusMessage('Access Denied: Invalid Password.', false);
+          loginBtn.textContent = 'Initialize Session';
+          loginBtn.style.opacity = '1';
+          return;
+        }
+
+        // Success
+        currentFacultyId   = id;
+        currentFacultyData = data;
+        setStatusMessage('Session Established.', true);
+        adminInfo.innerHTML = `<i class="fas fa-user-check"></i> ${data.name}`;
+        
+        // Listen for updates
+        ref.on('value', (snap) => {
+          currentFacultyData = snap.val() || currentFacultyData;
+          renderFacultyPanel();
+        });
+
+        renderFacultyPanel();
+      }).catch((err) => {
+        console.error(err);
+        setStatusMessage('Connection Error.', false);
+        loginBtn.textContent = 'Initialize Session';
+        loginBtn.style.opacity = '1';
+      });
+    });
+
+    window.updateStatus = function(newStatus) {
+      if (!currentFacultyId) return;
+
+      const messages = {
+        available: 'Available for consultation now.',
+        busy: 'Currently in meeting/class.',
+        unavailable: 'Away from desk.'
+      };
+
+      const ref = db.ref('faculty/' + currentFacultyId);
+      ref.update({
+        status: newStatus,
+        message: messages[newStatus],
+        lastseen: new Date().toLocaleTimeString()
+      });
+    };
+  </script>
+</body>
+</html>

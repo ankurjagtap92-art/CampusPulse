@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPulse | Premium Academic Portal</title>
+  
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* RESET & BASE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Outfit', sans-serif;
+      /* PREMIUM BLUE BACKGROUND (As requested) */
+      background: radial-gradient(circle at top right, #1c2e4a, #050a14 60%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1500px;
+    }
+
+    /* BACKGROUND FX CONTAINER */
+    .background-fx {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; /* Keeps everything behind the card */
+      pointer-events: none; /* Crucial: Doesn't block clicks on card */
+      overflow: hidden;
+    }
+
+    /* 1. FLOATING TEXT (Greek & Numbers) */
+    .floating-text {
+      position: absolute;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: rgba(77, 171, 247, 0.08); /* Very subtle blue tint */
+      /* Animation */
+      animation: floatText 20s infinite linear;
+      white-space: nowrap;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Different colors for variety (Subtle) */
+    .text-purple { color: rgba(108, 92, 231, 0.08); }
+    .text-gold { color: rgba(255, 215, 0, 0.08); }
+
+    @keyframes floatText {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.1; }
+      80% { opacity: 0.1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* 2. BUBBLES (Particles) */
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      animation: floatBubble 18s infinite linear;
+      box-shadow: 0 0 10px rgba(77, 171, 247, 0.05);
+    }
+
+    @keyframes floatBubble {
+      0% { transform: translateY(110vh) scale(0); opacity: 0; }
+      40% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* GLASS CARD CONTAINER */
+    .card {
+      position: relative;
+      width: 380px;
+      padding: 50px 40px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(255, 255, 255, 0.05);
+      text-align: center;
+      z-index: 10;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Inner Glow for Card */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(45deg, #ffb703, #00b4ff, #2ec4b6);
+      z-index: -1;
+      border-radius: 27px;
+      filter: blur(25px);
+      opacity: 0.3;
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      /* Text Gradient */
+      background: linear-gradient(135deg, #ffffff 0%, #00b4ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      transform: translateZ(30px);
+      letter-spacing: -1px;
+    }
+
+    h1 span {
+      color: #00b4ff;
+    }
+
+    p {
+      color: #b0c4de;
+      font-size: 0.95rem;
+      font-weight: 300;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      transform: translateZ(20px);
+    }
+
+    .buttons-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transform: translateZ(40px);
+    }
+
+    /* PREMIUM BUTTONS STYLING */
+    button {
+      position: relative;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Shine Effect on Hover */
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: skewX(-20deg);
+      transition: 0.5s;
+    }
+    button:hover::after {
+      left: 200%;
+    }
+
+    button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    /* Button 1: Library (Gold/Amber) */
+    .library-btn {
+      background: linear-gradient(135deg, #ffb703, #fb8500);
+      color: #000;
+    }
+
+    /* Button 2: Faculty (Blue/Cyan) */
+    .faculty-btn {
+      background: linear-gradient(135deg, #00b4ff, #0077b6);
+    }
+
+    /* Button 3: Login (Green/Teal) */
+    .login-btn {
+      background: linear-gradient(135deg, #00b894, #00cec9);
+    }
+
+    /* Decorative Icons (Floating above text) */
+    .floating-icon {
+      position: absolute;
+      font-size: 80px;
+      color: rgba(255, 255, 255, 0.03);
+      z-index: 5; /* Between bg and card */
+      pointer-events: none;
+      animation: floatIcon 12s infinite ease-in-out;
+    }
+    .icon-1 { top: -40px; right: -40px; }
+    .icon-2 { bottom: -40px; left: -40px; animation-delay: 3s; }
+
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .card { width: 90%; padding: 40px 20px; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND EFFECTS (Generated via JS below) -->
+  <div class="background-fx" id="bgFx"></div>
+
+  <!-- 3D CARD -->
+  <div class="card" id="tiltCard">
+    <!-- Floating Icons (Above Card) -->
+    <i class="fas fa-graduation-cap floating-icon icon-1"></i>
+    <i class="fas fa-calculator floating-icon icon-2"></i>
+
+    <h1>Campus<span>Pulse</span></h1>
+    <p>Advanced Dashboard for<br>Library Seating & Faculty Availability</p>
+
+    <div class="buttons-wrapper">
+      <button class="library-btn" onclick="location.href='index.html'">
+        <i class="fas fa-chair"></i> Library Map View
+      </button>
+
+      <button class="faculty-btn" onclick="location.href='facultyview.html'">
+        <i class="fas fa-chalkboard-user"></i> Faculty Availability
+      </button>
+
+      <button class="login-btn" onclick="location.href='login.html'">
+        <i class="fas fa-fingerprint"></i> Faculty Login
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // === GENERATE BACKGROUND EFFECTS ===
+    const bgContainer = document.getElementById('bgFx');
+
+    // 1. GREEK LETTERS (Study Related)
+    const greekLetters = ['α', 'β', 'γ', 'Ω', 'π', 'Σ', 'Φ', 'θ', 'Ψ'];
+    
+    // 2. NUMBERS (Study Related)
+    const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+    // FUNCTION TO CREATE FLOATING TEXT
+    function createFloatingText(text) {
+      const el = document.createElement('div');
+      el.classList.add('floating-text');
+      el.innerText = text;
+      
+      // Random Positioning (0% to 100%)
+      const top = Math.random() * 100;
+      const left = Math.random() * 100;
+      
+      // Random Duration (15s to 30s) so they don't move in sync
+      const duration = 15 + Math.random() * 15;
+      const delay = Math.random() * 5;
+
+      // Styling Variation
+      if (Math.random() > 0.8) el.classList.add('text-purple');
+      if (Math.random() > 0.9) el.classList.add('text-gold');
+
+      el.style.top = `${top}%`;
+      el.style.left = `${left}%`;
+      el.style.animationDuration = `${duration}s`;
+      el.style.animationDelay = `${delay}s`;
+      
+      bgContainer.appendChild(el);
+    }
+
+    // 3. BUBBLES (Particles)
+    function createBubble() {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      
+      const size = Math.random() * 15 + 2; // Random size
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.left = `${Math.random() * 100}%`;
+      
+      const duration = 10 + Math.random() * 10;
+      p.style.animationDuration = `${duration}s`;
+      p.style.animationDelay = `${Math.random() * 5}s`;
+
+      bgContainer.appendChild(p);
+    }
+
+    // === EXECUTE GENERATION ===
+
+    // Generate 20 Greek Letters
+    for (let i = 0; i < 20; i++) {
+      const letter = greekLetters[Math.floor(Math.random() * greekLetters.length)];
+      createFloatingText(letter);
+    }
+
+    // Generate 20 Numbers
+    for (let i = 0; i < 20; i++) {
+      const num = numbers[Math.floor(Math.random() * numbers.length)];
+      createFloatingText(num);
+    }
+
+    // Generate 40 Bubbles (More bubbles to fill gaps)
+    for (let i = 0; i < 40; i++) {
+      createBubble();
+    }
+
+    // === 3D TILT EFFECT ===
+    const card = document.getElementById('tiltCard');
+    
+    document.addEventListener('mousemove', (e) => {
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+      
+      // Apply rotation
+      card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+    });
+
+    // Reset position
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+    });
+  </script>
+</body>
+</html>

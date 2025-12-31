@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Availability & Messages - College Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --primary-color: #4a90e2;
+            --success-color: #44bd32;
+            --warning-color: #f39c12;
+            --danger-color: #e84118;
+            --text-color: #333;
+            --border-color: #e0e6ed;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e3f2fd 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .available .stat-number { color: var(--success-color); }
+        .unavailable .stat-number { color: var(--danger-color); }
+        .busy .stat-number { color: var(--warning-color); }
+
+        .faculty-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .faculty-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .faculty-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .faculty-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .faculty-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .faculty-info h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-color);
+        }
+
+        .faculty-dept {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+        }
+
+        .status-available { background: var(--success-color); }
+        .status-unavailable { background: var(--danger-color); }
+        .status-busy { background: var(--warning-color); }
+
+        .qualifications {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .qual-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .qual-icon i { color: var(--primary-color); }
+
+        .message-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        .message-text {
+            font-style: italic;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .last-seen {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .faculty-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="header-title">
+                <i class="fas fa-users"></i> Faculty Portal
+            </h1>
+            <p class="header-subtitle">Check professor availability and latest messages</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card available">
+                <div class="stat-number" id="available-count">12</div>
+                <div>Available Now</div>
+            </div>
+            <div class="stat-card busy">
+                <div class="stat-number" id="busy-count">5</div>
+                <div>In Meeting</div>
+            </div>
+            <div class="stat-card unavailable">
+                <div class="stat-number" id="unavailable-count">8</div>
+                <div>Not Available</div>
+            </div>
+        </div>
+
+        <div class="faculty-grid" id="faculty-grid">
+            <!-- Faculty cards generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const facultyData = [
+            {
+                name: "Dr. Rajesh Kumar",
+                dept: "Computer Science",
+                status: "available",
+                qualifications: ["PhD", "M.Tech", "10+ Yrs Exp"],
+                message: "Available for project guidance today 2-4 PM",
+                lastSeen: "5 mins ago"
+            },
+            {
+                name: "Prof. Anjali Sharma",
+                dept: "Mathematics",
+                status: "busy",
+                qualifications: ["PhD", "NET", "IIT Alumni"],
+                message: "In research meeting. Will respond after 3 PM.",
+                lastSeen: "12 mins ago"
+            },
+            {
+                name: "Dr. Amit Patel",
+                dept: "Electronics",
+                status: "available",
+                qualifications: ["PhD", "IEEE Member", "15+ Yrs"],
+                message: "Free for doubt clearing. Room 204.",
+                lastSeen: "2 mins ago"
+            },
+            {
+                name: "Ms. Priya Singh",
+                dept: "English",
+                status: "unavailable",
+                qualifications: ["M.Phil", "SET", "Published Author"],
+                message: "On leave today. Contact via email.",
+                lastSeen: "Yesterday"
+            },
+            {
+                name: "Dr. Sanjay Gupta",
+                dept: "Mechanical",
+                status: "busy",
+                qualifications: ["PhD", "ASME Member", "Patents"],
+                message: "Lab session ongoing. Available after 5 PM.",
+                lastSeen: "8 mins ago"
+            },
+            {
+                name: "Prof. Neha Desai",
+                dept: "Chemistry",
+                status: "available",
+                qualifications: ["PhD", "Post Doc", "20+ Yrs"],
+                message: "Ready for viva preparations. Come to Lab 12.",
+                lastSeen: "1 min ago"
+            }
+        ];
+
+        function renderFaculty() {
+            const grid = document.getElementById('faculty-grid');
+            let availableCount = 0, busyCount = 0, unavailableCount = 0;
+
+            grid.innerHTML = facultyData.map(faculty => {
+                if (faculty.status === 'available') availableCount++;
+                else if (faculty.status === 'busy') busyCount++;
+                else unavailableCount++;
+
+                return `
+                    <div class="faculty-card">
+                        <div class="status-badge status-${faculty.status}">
+                            <i class="fas fa-circle"></i> ${faculty.status.toUpperCase()}
+                        </div>
+                        
+                        <div class="faculty-header">
+                            <div class="faculty-avatar">
+                                ${faculty.name.charAt(0)}
+                            </div>
+                            <div class="faculty-info">
+                                <h3>${faculty.name}</h3>
+                                <div class="faculty-dept">${faculty.dept}</div>
+                            </div>
+                        </div>
+
+                        <div class="qualifications">
+                            ${faculty.qualifications.map(q => 
+                                `<span class="qual-icon">
+                                    <i class="fas fa-certificate"></i> ${q}
+                                </span>`
+                            ).join('')}
+                        </div>
+
+                        <div class="message-box">
+                            <div class="message-text">${faculty.message}</div>
+                            <div class="message-time">
+                                <i class="fas fa-clock"></i> ${faculty.lastSeen}
+                            </div>
+                        </div>
+
+                        <div class="last-seen">
+                            <i class="fas fa-eye"></i> Last active: ${faculty.lastSeen}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update stats
+            document.getElementById('available-count').textContent = availableCount;
+            document.getElementById('busy-count').textContent = busyCount;
+            document.getElementById('unavailable-count').textContent = unavailableCount;
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            // Simulate status changes
+            facultyData[Math.floor(Math.random() * facultyData.length)].status = 
+                ['available', 'busy', 'unavailable'][Math.floor(Math.random() * 3)];
+            renderFaculty();
+        }, 30000);
+
+        // Initial render
+        renderFaculty();
+    </script>
+</body>
+</html>
