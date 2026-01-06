@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Seat Booking - Premium Edition</title>
+    <title>Library Seat Booking - Ultimate Edition</title>
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,7 +22,7 @@
             --neon-blue: #4dabf7;
             --neon-purple: #9b59b6;
             --neon-orange: #ff9500;
-            --neon-gold: #ffd700;
+            --neon-gold: #ffd700; 
 
             --shadow-glow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
@@ -38,7 +38,7 @@
             overflow-x: hidden; position: relative;
         }
 
-        /* PREMIUM TOP NAV BAR */
+        /* --- NAVIGATION --- */
         .top-nav {
             position: fixed; top: 0; left: 0; width: 100%;
             height: 80px;
@@ -54,6 +54,8 @@
             color: #fff; display: flex; align-items: center; letter-spacing: 1px;
         }
         .logo i { color: var(--neon-blue); margin-right: 12px; text-shadow: 0 0 10px var(--neon-blue); }
+
+        .nav-controls { display: flex; gap: 20px; align-items: center; }
 
         .mode-switcher { display: flex; gap: 15px; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 50px; border: 1px solid var(--glass-border); }
         
@@ -72,7 +74,14 @@
         .mode-student.active { background: linear-gradient(135deg, var(--neon-green), #00d986); color: #000; }
         .mode-admin.active { background: linear-gradient(135deg, var(--neon-purple), #8e44ad); color: #fff; }
 
-        /* STATS HEADER */
+        /* Data View Button */
+        .btn-data-view {
+            padding: 10px 20px; border-radius: 10px; border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); background: transparent; cursor: pointer; transition: 0.3s; font-weight: 600;
+        }
+        .btn-data-view:hover { background: rgba(77, 171, 247, 0.1); box-shadow: 0 0 15px var(--neon-blue); }
+
+        /* --- STATS HEADER --- */
         header {
             position: sticky; top: 80px;
             width: 100%; background: rgba(5, 10, 20, 0.9);
@@ -84,7 +93,40 @@
         .stat { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px 20px; border-radius: 30px; border: 1px solid var(--glass-border); }
         .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
 
-        /* LOGIN MODAL */
+        /* --- DATA PAGE --- */
+        .data-page {
+            display: none; width: 90%; max-width: 1200px; margin: 100px auto 50px;
+            background: rgba(20, 25, 40, 0.8); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 30px; backdrop-filter: blur(20px);
+            min-height: 60vh;
+            animation: fadeIn 0.5s ease;
+        }
+        .data-page.active { display: block; }
+
+        .data-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; }
+        .data-header h2 { font-family: 'Outfit'; color: var(--neon-blue); }
+        
+        .data-table {
+            width: 100%; border-collapse: collapse; color: #fff;
+        }
+        .data-table th { text-align: left; padding: 15px; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.1); font-family: 'Outfit'; }
+        .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
+        .status-badge { padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .status-confirmed { background: rgba(0, 255, 163, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .status-pending { background: rgba(255, 215, 0, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
+        .status-expired { background: rgba(255, 77, 77, 0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
+
+        /* --- MAIN MAP VIEW --- */
+        .library-map {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 3rem; padding: 2rem; width: 100%; max-width: 1400px;
+            margin-bottom: 4rem;
+            transition: opacity 0.3s;
+        }
+        .library-map.hidden { display: none; opacity: 0; }
+
+        /* --- LOGIN MODAL --- */
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
@@ -100,100 +142,41 @@
             width: 90%; max-width: 400px; text-align: center;
             position: relative; overflow: hidden;
         }
-        .login-box::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(155,89,182,0.1) 0%, transparent 70%);
-            animation: rotate 10s linear infinite; pointer-events: none;
-        }
-        @keyframes rotate { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
-        
-        .login-box h2 { color: var(--neon-purple); font-family: 'Outfit'; margin-bottom: 2rem; position: relative; }
+        .login-box h2 { color: var(--neon-purple); font-family: 'Outfit'; margin-bottom: 2rem; }
         .login-box input {
             width: 100%; padding: 15px; margin-bottom: 1.5rem; border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff;
-            font-size: 1.1rem; text-align: center; letter-spacing: 2px;
+            font-size: 1.1rem; text-align: center;
         }
-        .login-box input:focus { border-color: var(--neon-purple); outline: none; box-shadow: 0 0 15px rgba(155,89,182,0.3); }
-        
         .login-btn {
             width: 100%; padding: 15px; background: linear-gradient(135deg, var(--neon-purple), #8e44ad);
             color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;
-            transition: 0.3s; box-shadow: 0 5px 20px rgba(155, 89, 182, 0.4); letter-spacing: 1px;
+            transition: 0.3s; letter-spacing: 1px;
         }
-        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(155,89,182,0.6); }
         .close-login { margin-top: 1.5rem; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
-        .close-login:hover { color: #fff; }
 
-        /* LAVISH ADMIN PANEL - SPACING FIXED */
+        /* --- ADMIN CONTROLS --- */
         .admin-controls {
             display: none; 
             background: linear-gradient(135deg, rgba(20, 25, 40, 0.9), rgba(10, 15, 25, 0.9));
             border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 24px;
-            padding: 1.5rem 2rem; 
-            /* FIXED SPACING: Increased margin-top to 4rem for clear separation */
-            margin: 4rem auto 3rem; 
+            padding: 1.5rem 2rem; margin: 4rem auto 3rem; 
             width: 90%; max-width: 900px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05);
-            backdrop-filter: blur(20px); position: relative; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(20px);
         }
         .admin-controls.active { display: block; animation: slideDown 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .control-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: center; }
         
-        .admin-controls::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-orange), transparent);
-        }
-
-        .control-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: center; position: relative; z-index: 1; }
-        
-        /* Lavish Button Styles */
         .admin-btn {
-            padding: 12px 24px; border-radius: 12px; cursor: pointer;
-            font-weight: 700; font-family: 'Outfit'; font-size: 0.95rem;
-            transition: all 0.4s ease; display: flex; align-items: center; gap: 10px;
-            position: relative; overflow: hidden;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 700; 
+            font-family: 'Outfit'; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px;
+            color: #fff; border: 1px solid rgba(255,255,255,0.2);
         }
-        
-        .btn-add { 
-            background: linear-gradient(135deg, #00b09b, #96c93d); color: #fff; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
-        }
-        .btn-add:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 176, 155, 0.6); }
-        
-        .btn-remove { 
-            background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #fff; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
-        }
-        .btn-remove:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 65, 108, 0.6); }
-        
-        .btn-move { 
-            background: linear-gradient(135deg, #4facfe, #00f2fe); color: #fff; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-        .btn-move:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6); }
-        
-        .btn-logout { 
-            background: linear-gradient(135deg, #614385, #516395); color: #fff; border: 1px solid rgba(255,255,255,0.2);
-            margin-left: auto; 
-        }
-        .btn-logout:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(97, 67, 133, 0.6); }
+        .btn-add { background: linear-gradient(135deg, #00b09b, #96c93d); box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4); }
+        .btn-remove { background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4); }
+        .btn-logout { background: linear-gradient(135deg, #614385, #516395); margin-left: auto; }
 
-        .admin-input { 
-            padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); 
-            background: rgba(0,0,0,0.3); color: #fff; width: 100px; text-align: center;
-            font-family: 'Outfit'; font-weight: 600; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .admin-input:focus { border-color: var(--neon-orange); outline: none; }
-
-
-        /* LIBRARY MAP & TABLES */
-        .library-map {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 3rem; padding: 2rem; width: 100%; max-width: 1400px; perspective: 1200px;
-            margin-bottom: 4rem;
-        }
-
+        /* --- TABLES & SEATS --- */
         .table-group {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
             border-radius: 30px; padding: 25px; position: relative;
@@ -201,60 +184,45 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             display: flex; flex-direction: column; align-items: center;
         }
-        
-        .table-group.dragging {
-            opacity: 0.4; border: 2px dashed var(--neon-blue);
-            transform: scale(0.95) rotate(2deg);
-        }
-        .table-group.drag-over {
-            border: 2px dashed var(--neon-green);
-            background: rgba(0, 255, 163, 0.05);
-        }
-
         .table-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .table-id { font-size: 1.4rem; font-weight: 700; color: #fff; font-family: 'Outfit'; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .drag-handle { cursor: grab; color: var(--text-muted); padding: 10px; transition: 0.3s; }
-        .drag-handle:hover { color: var(--neon-blue); transform: scale(1.2); }
+        .table-id { font-size: 1.4rem; font-weight: 700; color: #fff; font-family: 'Outfit'; }
 
-        /* SEAT ROWS */
-        .seats-row {
-            display: flex; gap: 15px; justify-content: center; width: 100%; margin-bottom: 15px;
-        }
+        .seats-row { display: flex; gap: 15px; justify-content: center; width: 100%; margin-bottom: 15px; }
         .seats-row:last-child { margin-bottom: 0; margin-top: 15px; }
 
         .table-surface {
-            width: 90%; height: 60px;
+            width: 90%; height: 60px; border-radius: 12px; 
             background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
-            position: relative; z-index: 1;
+            border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative; z-index: 1;
         }
-        .table-surface i { font-size: 1.5rem; color: rgba(255,255,255,0.1); }
 
-        /* SEATS */
+        /* --- SEAT STYLES --- */
         .seat {
             width: 50px; height: 50px; border-radius: 12px;
             background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 0.9rem; color: var(--text-muted);
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative; backdrop-filter: blur(5px);
+            cursor: pointer; transition: all 0.3s; position: relative;
         }
-        .seat:hover { transform: scale(1.15); z-index: 2; }
+        .seat:hover { transform: scale(1.15); z-index: 10; }
 
         .seat.available { border-color: rgba(0, 255, 163, 0.3); color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 163, 0.1); }
-        .seat.available:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 25px var(--neon-green); }
+        .seat.available:hover { background: var(--neon-green); color: #000; }
 
         .seat.occupied { border-color: rgba(255, 77, 77, 0.4); color: var(--neon-red); }
-        .seat.occupied::after {
-            content: '\f023'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-            position: absolute; font-size: 10px; bottom: 4px; right: 4px;
-            color: var(--neon-red);
-        }
-        .seat.occupied:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 25px var(--neon-red); }
+        .seat.occupied:hover { background: var(--neon-red); color: #fff; }
 
-        /* ACTION MODAL */
+        /* PRE-BOOKED STYLE */
+        .seat.booked {
+            border-color: var(--neon-gold); color: var(--neon-gold);
+            animation: pulseGold 2s infinite;
+        }
+        .seat.booked:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 25px var(--neon-gold); }
+
+        @keyframes pulseGold { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+
+        /* --- ACTION MODAL --- */
         .action-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
@@ -264,56 +232,60 @@
         .action-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content {
             background: #1e2538; border: 1px solid rgba(255,255,255,0.1);
-            padding: 2.5rem; border-radius: 24px; width: 90%; max-width: 380px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            border-top: 4px solid var(--neon-blue);
+            padding: 2.5rem; border-radius: 24px; width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6); border-top: 4px solid var(--neon-blue);
             transform: scale(0.9); transition: 0.3s;
         }
         .action-modal.active .modal-content { transform: scale(1); }
         
-        .modal-content h3 { color: #fff; margin-bottom: 15px; font-family: 'Outfit'; font-size: 1.5rem; }
-        .modal-content p { color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
+        .modal-content h3 { color: #fff; margin-bottom: 15px; font-family: 'Outfit'; }
+        .modal-content p { color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; }
         
-        .modal-input { width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; border-radius: 10px; font-size: 1rem; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px; }
+        .modal-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 1rem; }
         .modal-input:focus { border-color: var(--neon-blue); outline: none; }
         
-        .modal-actions { display: flex; gap: 15px; justify-content: center; }
-        .btn-modal { padding: 12px 25px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: 'Outfit'; }
-        .btn-confirm { background: var(--neon-green); color: #000; }
-        .btn-confirm:hover { box-shadow: 0 0 20px rgba(0,255,163,0.4); }
+        .modal-actions { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .btn-modal { padding: 12px 20px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-family: 'Outfit'; }
+        .btn-confirm { background: var(--neon-blue); color: #fff; }
+        .btn-confirm:hover { background: #3b8dbd; }
         .btn-danger { background: var(--neon-red); color: #fff; }
-        .btn-danger:hover { box-shadow: 0 0 20px rgba(255,77,77,0.4); }
         .btn-cancel { background: transparent; border: 1px solid #333; color: #fff; }
-        .btn-cancel:hover { background: #333; }
 
-        /* TOAST */
+        /* --- TOAST --- */
         .toast {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: rgba(20, 25, 40, 0.95); border-left: 4px solid var(--neon-blue);
             color: #fff; padding: 15px 30px; border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: 0.4s; z-index: 5000;
-            font-weight: 500; display: flex; align-items: center; gap: 12px;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 500; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(10px);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- 1. UNIFIED TOP NAV -->
+    <!-- NAVIGATION -->
     <nav class="top-nav">
         <div class="logo">
             <i class="fas fa-book-reader"></i> Smart<span style="color:var(--neon-blue)">Library</span>
         </div>
-        <div class="mode-switcher">
-            <button class="mode-btn mode-student active" id="btn-student">
-                <i class="fas fa-user-graduate"></i> Student
+        <div class="nav-controls">
+            <button class="btn-data-view" id="btn-data-view" onclick="toggleDataView()">
+                <i class="fas fa-database"></i> Booking Data
             </button>
-            <button class="mode-btn mode-admin" id="btn-admin">
-                <i class="fas fa-user-shield"></i> Librarian
-            </button>
+            <div class="mode-switcher">
+                <button class="mode-btn mode-student active" id="btn-student">
+                    <i class="fas fa-user-graduate"></i> Student
+                </button>
+                <button class="mode-btn mode-admin" id="btn-admin">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -331,32 +303,46 @@
     <header>
         <div class="stats-bar">
             <div class="stat"><span class="dot" style="background:var(--neon-green)"></span> Available: <span id="avail-count">0</span></div>
+            <div class="stat"><span class="dot" style="background:var(--neon-gold)"></span> Pre-Booked: <span id="booked-count">0</span></div>
             <div class="stat"><span class="dot" style="background:var(--neon-red)"></span> Occupied: <span id="occupied-count">0</span></div>
         </div>
     </header>
 
-    <!-- 3. LAVISH ADMIN CONTROLS (Fixed Spacing) -->
+    <!-- DATA PAGE -->
+    <section class="data-page" id="data-page">
+        <div class="data-header">
+            <h2><i class="fas fa-list-alt"></i> Real-time Booking Data</h2>
+            <button class="btn-modal btn-cancel" onclick="toggleDataView()">Close View</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Seat</th>
+                        <th>Student Name</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ADMIN CONTROLS -->
     <div class="admin-controls" id="admin-panel">
-        <div style="text-align: center; margin-bottom: 20px; color: var(--neon-orange); font-family: 'Outfit'; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">
+        <div style="text-align: center; margin-bottom: 20px; color: var(--neon-orange); font-family: 'Outfit'; font-weight: 700;">
             Control Center
         </div>
         <div class="control-row">
-            <div class="control-group">
-                <input type="number" id="new-table-seats" class="admin-input" value="4" min="1" max="12">
-            </div>
-            <button class="admin-btn btn-add" id="btn-add-table"><i class="fas fa-plus-circle"></i> Add Table</button>
-            
-            <button class="admin-btn btn-remove" id="btn-remove-table"><i class="fas fa-trash-alt"></i> Remove Last</button>
-            
-            <div style="width: 1px; background: rgba(255,255,255,0.1); height: 40px; margin: 0 15px;"></div>
-            
-            <button class="admin-btn btn-move" id="btn-toggle-drag">
-                <i class="fas fa-arrows-up-down-left-right"></i> Arrange Mode
-            </button>
-            
-            <button class="admin-btn btn-logout" id="btn-logout">
-                <i class="fas fa-power-off"></i> Logout
-            </button>
+            <input type="number" id="new-table-seats" class="modal-input" value="4" min="1" max="12" style="width: 80px;">
+            <button class="admin-btn btn-add" id="btn-add-table"><i class="fas fa-plus"></i> Add Table</button>
+            <button class="admin-btn btn-remove" id="btn-remove-table"><i class="fas fa-minus"></i> Remove Last</button>
+            <button class="admin-btn btn-logout" id="btn-logout"><i class="fas fa-power-off"></i> Logout</button>
         </div>
     </div>
 
@@ -368,10 +354,26 @@
     <!-- MODAL FOR ACTIONS -->
     <div class="action-modal" id="action-modal">
         <div class="modal-content">
-            <h3 id="modal-title">Seat Action</h3>
-            <p id="modal-desc">Enter details below.</p>
+            <h3 id="modal-title">Action</h3>
+            <p id="modal-desc">Description.</p>
             
-            <input type="text" id="occupant-name" class="modal-input" placeholder="Student Name / ID" style="display:none;">
+            <div id="modal-form">
+                <div class="input-group">
+                    <label>Student Name / ID</label>
+                    <input type="text" id="occupant-name" class="modal-input" placeholder="John Doe">
+                </div>
+                <!-- Time Slot Inputs -->
+                <div class="input-group" id="time-slot-group" style="display: flex; gap: 10px;">
+                    <div style="flex:1;">
+                        <label>Start Time</label>
+                        <input type="time" id="start-time" class="modal-input">
+                    </div>
+                    <div style="flex:1;">
+                        <label>End Time</label>
+                        <input type="time" id="end-time" class="modal-input">
+                    </div>
+                </div>
+            </div>
             
             <div class="modal-actions">
                 <button class="btn-modal btn-cancel" id="modal-cancel">Cancel</button>
@@ -386,21 +388,33 @@
     </div>
 
     <script>
-        // CONFIGURATION
+        // --- CONFIGURATION ---
         const ADMIN_PASS = "admin123";
-        let isAdmin = false;
-        let isDragMode = false;
-        let tables = []; 
-        let activeSeat = null;
+        const CHECK_IN_WINDOW_MINUTES = 15; 
+        // Visibility window for pre-bookings (4 hours)
+        const PREBOOK_SHOW_WINDOW_MINUTES = 240; 
 
-        // DOM ELEMENTS
+        let state = {
+            isAdmin: false,
+            tables: [], 
+            currentView: 'map', 
+            activeSeat: null,
+            activeBooking: null, 
+            modalMode: 'book' // 'book', 'checkin', 'admin_release'
+        };
+
         const dom = {
             body: document.body,
             map: document.getElementById('library-map'),
+            dataPage: document.getElementById('data-page'),
+            dataTableBody: document.getElementById('data-table-body'),
             modal: document.getElementById('action-modal'),
             modalTitle: document.getElementById('modal-title'),
             modalDesc: document.getElementById('modal-desc'),
-            modalInput: document.getElementById('occupant-name'),
+            occupantInput: document.getElementById('occupant-name'),
+            startTimeInput: document.getElementById('start-time'),
+            endTimeInput: document.getElementById('end-time'),
+            timeSlotGroup: document.getElementById('time-slot-group'),
             btnConfirm: document.getElementById('modal-confirm'),
             btnCancel: document.getElementById('modal-cancel'),
             btnStudent: document.getElementById('btn-student'),
@@ -412,9 +426,9 @@
             adminPanel: document.getElementById('admin-panel'),
             btnAddTable: document.getElementById('btn-add-table'),
             btnRemoveTable: document.getElementById('btn-remove-table'),
-            btnDragToggle: document.getElementById('btn-toggle-drag'),
             btnLogout: document.getElementById('btn-logout'),
             availCount: document.getElementById('avail-count'),
+            bookedCount: document.getElementById('booked-count'),
             occupiedCount: document.getElementById('occupied-count'),
             toast: document.getElementById('toast-msg')
         };
@@ -422,35 +436,150 @@
         function init() {
             loadData();
             renderLibrary();
+            renderDataPage();
             updateStats();
             setupEventListeners();
+            
+            // Time Check Loop (Every 10 seconds)
+            setInterval(timeCheckLoop, 10000);
         }
 
         function setupEventListeners() {
             dom.btnStudent.addEventListener('click', () => switchMode('student'));
             dom.btnAdmin.addEventListener('click', () => switchMode('admin'));
-
             dom.btnLogin.addEventListener('click', attemptLogin);
-            dom.loginModal.addEventListener('click', (e) => {
-                if(e.target === dom.loginModal) switchMode('student');
-            });
+            dom.loginModal.addEventListener('click', (e) => { if(e.target === dom.loginModal) switchMode('student'); });
             dom.btnLoginCancel.addEventListener('click', () => switchMode('student'));
-
             dom.btnAddTable.addEventListener('click', addTable);
             dom.btnRemoveTable.addEventListener('click', removeTable);
-            dom.btnDragToggle.addEventListener('click', toggleDragMode);
             dom.btnLogout.addEventListener('click', logout);
-
             dom.btnCancel.addEventListener('click', closeModal);
-            dom.btnConfirm.addEventListener('click', confirmAction);
+            dom.btnConfirm.addEventListener('click', handleModalConfirm);
         }
 
-        // --- AUTHENTICATION ---
+        // --- CORE DATA LOGIC ---
+        function loadData() {
+            const stored = localStorage.getItem('libraryData_v4');
+            if (stored) {
+                state.tables = JSON.parse(stored);
+            } else {
+                for(let i=1; i<=3; i++) {
+                    state.tables.push({ 
+                        id: i, 
+                        seats: Array.from({length: 4}, (_, j) => ({ 
+                            id: j+1, 
+                            bookings: [] 
+                        })) 
+                    });
+                }
+                saveData();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('libraryData_v4', JSON.stringify(state.tables));
+            updateStats();
+            if(state.currentView === 'data') renderDataPage();
+        }
+
+        // --- TIME & DATE HELPERS ---
+        function getISOFromTimeInput(timeStr) {
+            const now = new Date();
+            const [hours, minutes] = timeStr.split(':');
+            now.setHours(hours, minutes, 0, 0);
+            return now.toISOString();
+        }
+
+        function formatTime(isoString) {
+            const d = new Date(isoString);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // --- VISIBILITY LOGIC (FIXED) ---
+        function getActiveBooking(seat) {
+            const now = new Date();
+
+            // 1. Occupied: 
+            // FIX: If status is 'confirmed', the person is physically there. 
+            // We show as occupied as long as the session hasn't ended.
+            // We removed the strict 'startTime >= now' check so early check-ins work correctly.
+            const confirmed = seat.bookings.find(b => 
+                b.status === 'confirmed' && 
+                new Date(b.endTimeISO) >= now
+            );
+            if (confirmed) return { type: 'occupied', booking: confirmed };
+
+            // 2. Booked (Gold): Pending booking within window
+            const pending = seat.bookings.find(b => {
+                if (b.status !== 'pending') return false;
+                const start = new Date(b.startTimeISO);
+                // Window: 4 hours before start time
+                const earliestShow = new Date(start.getTime() - PREBOOK_SHOW_WINDOW_MINUTES * 60000);
+                // Don't show if pending booking is past the start time + 15 mins (it would be expired then)
+                const latestShow = new Date(start.getTime() + CHECK_IN_WINDOW_MINUTES * 60000);
+                
+                return now >= earliestShow && now <= latestShow;
+            });
+            
+            if (pending) return { type: 'booked', booking: pending };
+
+            // Otherwise available
+            return { type: 'available', booking: null };
+        }
+
+        // --- AUTO-CANCELLATION & TIME CHECK ---
+        function timeCheckLoop() {
+            const now = new Date();
+            let changed = false;
+
+            state.tables.forEach(table => {
+                table.seats.forEach(seat => {
+                    seat.bookings.forEach(booking => {
+                        const startTime = new Date(booking.startTimeISO);
+                        
+                        // Rule: Auto-expire pending bookings 15 mins AFTER start time
+                        if (booking.status === 'pending') {
+                            const deadline = new Date(startTime.getTime() + CHECK_IN_WINDOW_MINUTES * 60000);
+                            if (now > deadline) {
+                                booking.status = 'expired'; 
+                                changed = true;
+                            }
+                        }
+                        
+                        // Auto-complete confirmed bookings
+                        if (booking.status === 'confirmed') {
+                            const endTime = new Date(booking.endTimeISO);
+                            if (now > endTime) {
+                                booking.status = 'completed'; 
+                                changed = true;
+                            }
+                        }
+                    });
+                    
+                    // Cleanup old bookings (keep for 24h for records)
+                    seat.bookings = seat.bookings.filter(b => {
+                        if(b.status === 'completed' || b.status === 'expired') {
+                            const bTime = new Date(b.startTimeISO);
+                            return (now - bTime) < 86400000; 
+                        }
+                        return true;
+                    });
+                });
+            });
+
+            if (changed) {
+                saveData();
+                renderLibrary();
+                renderDataPage();
+                showToast("Auto-check: Some bookings updated (Expired/Completed).", "info");
+            }
+        }
+
+        // --- VIEW LOGIC ---
         function switchMode(mode) {
             if (mode === 'admin') {
-                if (isAdmin) {
-                    enableAdminView();
-                } else {
+                if (state.isAdmin) enableAdminView();
+                else {
                     dom.loginModal.classList.add('active');
                     dom.passInput.value = '';
                     dom.passInput.focus();
@@ -460,30 +589,22 @@
             }
         }
 
-        function attemptLogin() {
-            const pass = dom.passInput.value;
-            if (pass === ADMIN_PASS) {
-                isAdmin = true;
-                dom.loginModal.classList.remove('active');
-                enableAdminView();
-                showToast("Welcome Librarian! Access Granted.", "success");
+        function toggleDataView() {
+            if (state.currentView === 'map') {
+                state.currentView = 'data';
+                dom.map.classList.add('hidden');
+                dom.dataPage.classList.add('active');
+                renderDataPage();
             } else {
-                showToast("Access Denied. Incorrect Password.", "error");
-                dom.passInput.value = '';
-                dom.passInput.classList.add('shake');
-                setTimeout(() => dom.passInput.classList.remove('shake'), 500);
+                state.currentView = 'map';
+                dom.dataPage.classList.remove('active');
+                dom.map.classList.remove('hidden');
             }
         }
 
-        function logout() {
-            isAdmin = false;
-            switchMode('student');
-            showToast("Logged out securely.", "info");
-        }
-
         function enableAdminView() {
-            dom.body.classList.remove('student-mode');
-            dom.body.classList.add('admin-mode');
+            state.isAdmin = true;
+            dom.loginModal.classList.remove('active');
             dom.btnAdmin.classList.add('active');
             dom.btnStudent.classList.remove('active');
             dom.adminPanel.classList.add('active');
@@ -491,244 +612,323 @@
         }
 
         function enableStudentView() {
-            dom.body.classList.remove('admin-mode');
-            dom.body.classList.add('student-mode');
+            state.isAdmin = false;
+            dom.loginModal.classList.remove('active');
             dom.btnStudent.classList.add('active');
             dom.btnAdmin.classList.remove('active');
             dom.adminPanel.classList.remove('active');
-            if(isDragMode) toggleDragMode();
             renderLibrary();
         }
 
-        // --- DATA LOGIC ---
-        function loadData() {
-            const stored = localStorage.getItem('libraryData_v3');
-            if (stored) {
-                tables = JSON.parse(stored);
+        function attemptLogin() {
+            const pass = dom.passInput.value;
+            if (pass === ADMIN_PASS) {
+                state.isAdmin = true;
+                dom.loginModal.classList.remove('active');
+                enableAdminView();
+                showToast("Admin Access Granted.", "success");
             } else {
-                // Default: 3 Tables, 4 Seats each
-                for(let i=1; i<=3; i++) {
-                    tables.push({ id: i, seats: createSeatsArray(4) });
-                }
-                saveData();
+                showToast("Incorrect Password.", "error");
+                dom.passInput.value = '';
             }
         }
 
-        function createSeatsArray(count) {
-            let arr = [];
-            for(let j=1; j<=count; j++) {
-                arr.push({ id: j, status: 'available', occupant: '' });
-            }
-            return arr;
+        function logout() {
+            state.isAdmin = false;
+            enableStudentView();
+            showToast("Logged out.", "info");
         }
 
-        function saveData() {
-            localStorage.setItem('libraryData_v3', JSON.stringify(tables));
-            updateStats();
-        }
-
-        function updateStats() {
-            let avail = 0;
-            let occ = 0;
-            tables.forEach(t => {
-                t.seats.forEach(s => {
-                    if(s.status === 'available') avail++;
-                    else occ++;
-                });
-            });
-            dom.availCount.textContent = avail;
-            dom.occupiedCount.textContent = occ;
-        }
-
-        // RENDER LOGIC
+        // --- RENDER LOGIC ---
         function renderLibrary() {
             dom.map.innerHTML = '';
             
-            tables.forEach((table, index) => {
+            state.tables.forEach((table, tIdx) => {
                 const el = document.createElement('div');
                 el.className = 'table-group';
-                el.setAttribute('draggable', isDragMode);
-                el.dataset.index = index;
 
-                if(isAdmin && isDragMode) {
-                    el.addEventListener('dragstart', handleDragStart);
-                    el.addEventListener('dragover', handleDragOver);
-                    el.addEventListener('drop', handleDrop);
-                    el.addEventListener('dragenter', handleDragEnter);
-                    el.addEventListener('dragleave', handleDragLeave);
-                }
-
-                // Split seats into Top and Bottom
+                // Generate Seats
                 const midPoint = Math.ceil(table.seats.length / 2);
-                const topSeats = table.seats.slice(0, midPoint);
-                const bottomSeats = table.seats.slice(midPoint);
-
-                const generateSeatsHTML = (seatArr) => {
-                    return seatArr.map(seat => {
-                        const isOcc = seat.status === 'occupied';
-                        return `
-                            <div class="seat ${seat.status}" 
-                                 onclick="handleSeatClick(${index}, ${seat.id})">
-                                 ${isOcc ? '<i class="fas fa-user"></i>' : seat.id}
-                            </div>
-                        `;
-                    }).join('');
-                };
+                const topArr = table.seats.slice(0, midPoint);
+                const botArr = table.seats.slice(midPoint);
+                
+                const renderRow = (arr) => arr.map((s, i) => {
+                     // Calculate original index
+                     const originalIndex = arr === topArr ? i : i + midPoint;
+                     const active = getActiveBooking(s);
+                     let cls = 'available';
+                     let content = s.id;
+                     let tooltip = "Available - Click to Book";
+                     
+                     if(active.type === 'booked') { 
+                         cls = 'booked'; 
+                         content = '<i class="fas fa-clock"></i>'; 
+                         tooltip = `Pre-Booked (Click to Check In)`;
+                     }
+                     if(active.type === 'occupied') { 
+                         cls = 'occupied'; 
+                         content = '<i class="fas fa-user"></i>'; 
+                         tooltip = `Occupied`;
+                     }
+                     
+                     return `<div class="seat ${cls}" onclick="handleSeatClick(${tIdx}, ${originalIndex})" title="${tooltip}">${content}</div>`;
+                }).join('');
 
                 el.innerHTML = `
                     <div class="table-header">
                         <span class="table-id">Table ${table.id}</span>
-                        ${isAdmin && isDragMode ? '<i class="fas fa-grip-lines drag-handle"></i>' : ''}
                     </div>
-                    
-                    <div class="seats-row">
-                        ${generateSeatsHTML(topSeats)}
-                    </div>
-
-                    <div class="table-surface">
-                        <i class="fas fa-chair"></i>
-                    </div>
-
-                    <div class="seats-row">
-                        ${generateSeatsHTML(bottomSeats)}
-                    </div>
+                    <div class="seats-row">${renderRow(topArr)}</div>
+                    <div class="table-surface"><i class="fas fa-chair"></i></div>
+                    <div class="seats-row">${renderRow(botArr)}</div>
                 `;
                 dom.map.appendChild(el);
             });
         }
 
-        // --- ADMIN ACTIONS ---
-        function addTable() {
-            const count = parseInt(document.getElementById('new-table-seats').value) || 4;
-            const newId = tables.length > 0 ? Math.max(...tables.map(t => t.id)) + 1 : 1;
-            tables.push({ id: newId, seats: createSeatsArray(count) });
-            saveData();
-            renderLibrary();
-            showToast(`Table ${newId} created.`, "success");
-        }
+        function renderDataPage() {
+            dom.dataTableBody.innerHTML = '';
+            let rows = 0;
 
-        function removeTable() {
-            if(tables.length === 0) return showToast("No tables remaining.", "error");
-            const removed = tables.pop();
-            saveData();
-            renderLibrary();
-            showToast(`Table ${removed.id} removed.`, "info");
-        }
+            state.tables.forEach((table, tIdx) => {
+                table.seats.forEach((seat, sIdx) => {
+                    const relevantBookings = seat.bookings.filter(b => 
+                        ['pending', 'confirmed'].includes(b.status)
+                    );
 
-        function toggleDragMode() {
-            isDragMode = !isDragMode;
-            
-            if(isDragMode) {
-                dom.btnDragToggle.style.background = 'var(--neon-red)';
-                dom.btnDragToggle.innerHTML = '<i class="fas fa-stop"></i> Stop Arranging';
-                showToast("Arrange Mode Active: Drag tables to reorder.", "info");
-            } else {
-                dom.btnDragToggle.style.background = '';
-                dom.btnDragToggle.innerHTML = '<i class="fas fa-arrows-up-down-left-right"></i> Arrange Mode';
+                    relevantBookings.forEach(booking => {
+                        rows++;
+                        const tr = document.createElement('tr');
+                        
+                        let statusClass = '';
+                        if(booking.status === 'confirmed') statusClass = 'status-confirmed';
+                        else if(booking.status === 'pending') statusClass = 'status-pending';
+                        else statusClass = 'status-expired';
+
+                        const timeStr = `${formatTime(booking.startTimeISO)} - ${formatTime(booking.endTimeISO)}`;
+                        const actionBtn = state.isAdmin ? `<button class="btn-modal btn-danger" style="padding:5px 10px; font-size:0.8rem" onclick="handleAdminCancel(${tIdx}, ${sIdx}, '${booking.id}')">Cancel</button>` : '-';
+
+                        tr.innerHTML = `
+                            <td>${table.id}</td>
+                            <td>${seat.id}</td>
+                            <td>${booking.name}</td>
+                            <td>${timeStr}</td>
+                            <td><span class="status-badge ${statusClass}">${booking.status}</span></td>
+                            <td>${actionBtn}</td>
+                        `;
+                        dom.dataTableBody.appendChild(tr);
+                    });
+                });
+            });
+
+            if(rows === 0) {
+                dom.dataTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No active bookings found.</td></tr>';
             }
-            renderLibrary();
         }
 
-        // Drag Drop
-        let dragSrcIndex = null;
-        function handleDragStart(e) {
-            dragSrcIndex = +this.dataset.index;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-        function handleDragOver(e) { if (e.preventDefault) e.preventDefault(); return false; }
-        function handleDragEnter(e) { this.classList.add('drag-over'); }
-        function handleDragLeave(e) { this.classList.remove('drag-over'); }
-        function handleDrop(e) {
-            if (e.stopPropagation) e.stopPropagation();
-            const dragDestIndex = +this.dataset.index;
-            if (dragSrcIndex !== dragDestIndex) {
-                const temp = tables[dragSrcIndex];
-                tables[dragSrcIndex] = tables[dragDestIndex];
-                tables[dragDestIndex] = temp;
-                saveData();
-                renderLibrary();
-                showToast("Tables reordered.", "success");
-            }
-            return false;
+        function updateStats() {
+            let avail = 0, booked = 0, occupied = 0;
+            const now = new Date();
+
+            state.tables.forEach(table => {
+                table.seats.forEach(seat => {
+                    const active = getActiveBooking(seat);
+                    if(active.type === 'available') avail++;
+                    else if(active.type === 'booked') booked++;
+                    else if(active.type === 'occupied') occupied++;
+                });
+            });
+
+            dom.availCount.textContent = avail;
+            dom.bookedCount.textContent = booked;
+            dom.occupiedCount.textContent = occupied;
         }
 
-        // --- SEAT ACTIONS ---
-        window.handleSeatClick = function(tableIndex, seatId) {
-            const table = tables[tableIndex];
-            const seat = table.seats.find(s => s.id === seatId);
-            activeSeat = { tableIndex, seatId, seatObj: seat };
+        // --- INTERACTION LOGIC ---
+        window.handleSeatClick = function(tIdx, sIdx) {
+            const seat = state.tables[tIdx].seats[sIdx];
+            const active = getActiveBooking(seat);
+            state.activeSeat = { tIdx, sIdx, seatObj: seat };
 
-            if (isAdmin) {
-                if (seat.status === 'available') {
-                    openModal('book');
+            if (state.isAdmin) {
+                // Admin Logic
+                if (active.booking) {
+                    state.activeBooking = active.booking;
+                    openModal('admin_release');
                 } else {
-                    openModal('vacate');
+                    showToast("Seat is available. Students must book it.", "info");
                 }
             } else {
-                if (seat.status === 'available') {
-                    showToast("Please contact the librarian to book.", "info");
-                } else {
-                    showToast(`Occupied by: ${seat.occupant}`, "info");
+                // Student Logic
+                if (active.type === 'available') {
+                    openModal('book');
+                } else if (active.type === 'booked') {
+                    // Check if within 15 minute window (before start)
+                    const now = new Date();
+                    const start = new Date(active.booking.startTimeISO);
+                    const diffMin = (now - start) / 60000;
+
+                    if (diffMin >= -CHECK_IN_WINDOW_MINUTES) {
+                        state.activeBooking = active.booking;
+                        openModal('checkin');
+                    } else {
+                        // Too early
+                        const minsLeft = Math.abs(Math.floor(diffMin));
+                        showToast(`Check-in opens in ${minsLeft} minutes.`, "error");
+                    }
+                } else if (active.type === 'occupied') {
+                    showToast(`Seat occupied by ${active.booking.name}.`, "info");
                 }
             }
         };
 
-        function openModal(action) {
+        function openModal(mode) {
+            state.modalMode = mode;
             dom.modal.classList.add('active');
-            dom.modalInput.value = ''; 
+            dom.occupantInput.value = '';
+            dom.startTimeInput.value = '';
+            dom.endTimeInput.value = '';
 
-            if (action === 'book') {
-                dom.modalTitle.textContent = "Reserve Seat";
-                dom.modalTitle.style.color = "var(--neon-green)";
-                dom.modalDesc.textContent = "Enter student details for this seat.";
-                dom.modalInput.style.display = "block";
-                dom.modalInput.focus();
+            if (mode === 'book') {
+                dom.modalTitle.textContent = "Pre-Book Seat";
+                dom.modalTitle.style.color = "var(--neon-gold)";
+                dom.modalDesc.textContent = "Select your time slot. You must check in within 15 mins of start time.";
+                dom.occupantInput.style.display = 'block';
+                dom.timeSlotGroup.style.display = 'flex';
+                dom.btnConfirm.textContent = "Book Seat";
                 dom.btnConfirm.className = "btn-modal btn-confirm";
-                dom.btnConfirm.textContent = "Confirm Booking";
-            } else {
+                // Default times: Next hour
+                const now = new Date();
+                now.setMinutes(0);
+                now.setHours(now.getHours() + 1);
+                dom.startTimeInput.value = now.toTimeString().substring(0,5);
+                now.setHours(now.getHours() + 2);
+                dom.endTimeInput.value = now.toTimeString().substring(0,5);
+            } 
+            else if (mode === 'checkin') {
+                const booking = state.activeBooking;
+                dom.modalTitle.textContent = "Check In";
+                dom.modalTitle.style.color = "var(--neon-green)";
+                dom.modalDesc.textContent = `Confirm attendance for ${booking.name}?`;
+                dom.occupantInput.style.display = 'none';
+                dom.timeSlotGroup.style.display = 'none';
+                dom.btnConfirm.textContent = "Confirm Arrival";
+                dom.btnConfirm.className = "btn-modal btn-confirm";
+            } 
+            else if (mode === 'admin_release') {
+                const booking = state.activeBooking;
                 dom.modalTitle.textContent = "Release Seat";
                 dom.modalTitle.style.color = "var(--neon-red)";
-                dom.modalDesc.textContent = `Release this seat for: ${activeSeat.seatObj.occupant}?`;
-                dom.modalInput.style.display = "none";
+                dom.modalDesc.textContent = `Cancel booking for ${booking.name}?`;
+                dom.occupantInput.style.display = 'none';
+                dom.timeSlotGroup.style.display = 'none';
+                dom.btnConfirm.textContent = "Release";
                 dom.btnConfirm.className = "btn-modal btn-danger";
-                dom.btnConfirm.textContent = "Yes, Release";
             }
         }
 
         function closeModal() {
             dom.modal.classList.remove('active');
-            activeSeat = null;
+            state.activeSeat = null;
+            state.activeBooking = null;
         }
 
-        function confirmAction() {
-            if (!activeSeat) return;
+        function handleModalConfirm() {
+            const { tIdx, sIdx, seatObj } = state.activeSeat;
 
-            if (dom.modalInput.style.display !== 'none') {
-                const name = dom.modalInput.value.trim();
-                if (!name) return showToast("Name is required.", "error");
-                activeSeat.seatObj.status = 'occupied';
-                activeSeat.seatObj.occupant = name;
-                showToast(`Seat reserved for ${name}`, "success");
-            } else {
-                activeSeat.seatObj.status = 'available';
-                activeSeat.seatObj.occupant = '';
-                showToast("Seat released.", "success");
+            if (state.modalMode === 'book') {
+                const name = dom.occupantInput.value.trim();
+                const startStr = dom.startTimeInput.value;
+                const endStr = dom.endTimeInput.value;
+
+                if (!name || !startStr || !endStr) return showToast("Please fill all fields.", "error");
+                if (startStr >= endStr) return showToast("End time must be after start time.", "error");
+
+                // Check for overlap
+                const newStart = getISOFromTimeInput(startStr);
+                const newEnd = getISOFromTimeInput(endStr);
+                
+                const overlap = seatObj.bookings.some(b => {
+                    if(b.status === 'expired' || b.status === 'completed') return false;
+                    return (newStart < b.endTimeISO && newEnd > b.startTimeISO);
+                });
+
+                if(overlap) return showToast("Time slot overlaps with existing booking.", "error");
+
+                const newBooking = {
+                    id: Date.now().toString(),
+                    name: name,
+                    startTimeISO: newStart,
+                    endTimeISO: newEnd,
+                    status: 'pending'
+                };
+
+                seatObj.bookings.push(newBooking);
+                showToast("Seat Pre-booked! Please arrive on time.", "success");
+            } 
+            else if (state.modalMode === 'checkin') {
+                // Security Check (ensure we are still in valid window)
+                const now = new Date();
+                const start = new Date(state.activeBooking.startTimeISO);
+                const diffMin = (now - start) / 60000;
+
+                if (diffMin < -CHECK_IN_WINDOW_MINUTES) {
+                    showToast("It is too early to check in.", "error");
+                    closeModal();
+                    return;
+                }
+
+                // THE FIX: Set status to confirmed
+                state.activeBooking.status = 'confirmed';
+                showToast("Checked in successfully.", "success");
+            } 
+            else if (state.modalMode === 'admin_release') {
+                state.activeBooking.status = 'expired'; 
+                showToast("Booking cancelled by admin.", "info");
             }
+
             saveData();
-            renderLibrary();
+            renderLibrary(); // Re-rendering calls getActiveBooking, which now sees 'confirmed' and paints Red.
+            renderDataPage();
             closeModal();
         }
 
-        // Utils
+        window.handleAdminCancel = function(tIdx, sIdx, bookingId) {
+            if(!state.isAdmin) return;
+            const seat = state.tables[tIdx].seats[sIdx];
+            const booking = seat.bookings.find(b => b.id === bookingId);
+            if(booking) {
+                booking.status = 'expired';
+                saveData();
+                renderLibrary();
+                renderDataPage();
+                showToast("Booking cancelled.", "info");
+            }
+        };
+
+        function addTable() {
+            const count = parseInt(document.getElementById('new-table-seats').value) || 4;
+            const newId = state.tables.length > 0 ? Math.max(...state.tables.map(t => t.id)) + 1 : 1;
+            state.tables.push({ id: newId, seats: Array.from({length: count}, (_, j) => ({ id: j+1, bookings: [] })) });
+            saveData();
+            renderLibrary();
+            showToast("Table added.", "success");
+        }
+
+        function removeTable() {
+            if(state.tables.length === 0) return showToast("No tables to remove.", "error");
+            state.tables.pop();
+            saveData();
+            renderLibrary();
+            showToast("Table removed.", "info");
+        }
+
         function showToast(msg, type) {
             const toast = dom.toast;
             toast.querySelector('span').textContent = msg;
-            
             if(type === 'error') toast.style.borderLeftColor = 'var(--neon-red)';
             else if(type === 'success') toast.style.borderLeftColor = 'var(--neon-green)';
             else toast.style.borderLeftColor = 'var(--neon-blue)';
-
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
