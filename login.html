@@ -24,7 +24,7 @@
       /* Neon Status */
       --status-available: #00ffa3;
       --status-busy: #ffbf00;
-      --status-unavailable: #ff4d4d;
+      --status-unavailable: #ff4343;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -231,11 +231,49 @@
     .status-btn.busy:hover { background: var(--status-busy); color: #000; box-shadow: 0 0 15px var(--status-busy); }
     .status-btn.unavailable:hover { background: var(--status-unavailable); color: #fff; box-shadow: 0 0 15px var(--status-unavailable); }
 
-    .message-box {
-      padding: 1.2rem; border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      border-left: 4px solid var(--primary-accent);
-      font-size: 1rem; color: #d0d0d0; margin-bottom: 0.5rem;
+    /* Custom Message Input Styles */
+    .custom-msg-wrapper {
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+
+    .custom-msg-input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      padding-right: 50px; /* Space for save icon */
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .custom-msg-input:focus {
+      border-color: var(--primary-accent);
+      background: rgba(0,0,0,0.5);
+    }
+
+    .save-msg-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+      padding: 5px;
+    }
+
+    .save-msg-btn:hover {
+      color: var(--primary-accent);
+      transform: scale(1.1);
     }
 
     .last-seen { font-size: 0.85rem; color: var(--text-muted); }
@@ -290,11 +328,25 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 
   <script>
-    
+    // CONFIG & INITIALIZATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYRHFVP6sHvSY2cf99I5nUCFwfYyEruY",
+      authDomain: "campuspulse-ed90f.firebaseapp.com",
+      databaseURL: "https://campuspulse-ed90f-default-rtdb.firebaseio.com",
+      projectId: "campuspulse-ed90f",
+      storageBucket: "campuspulse-ed90f.firebasestorage.app",
+      messagingSenderId: "361434603294",
+      appId: "1:361434603294:web:59723189cd1a96415bf30f",
+      measurementId: "G-Z2CSNPYMVJ"
+    };
 
-    firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase safely
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
+    // DOM ELEMENTS
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
     const loginBtn       = document.getElementById('loginBtn');
@@ -352,6 +404,10 @@
         status === 'busy' ? 'status-busy' :
         'status-unavailable';
 
+      // Check if the input exists and is focused to prevent wiping user's text while they type
+      const msgInput = document.getElementById('customMsgInput');
+      const isInputFocused = msgInput && document.activeElement === msgInput;
+
       facultyPanel.innerHTML = `
         <div class="faculty-header">
           <div class="avatar">${(f.name || currentFacultyId || '?').charAt(0).toUpperCase()}</div>
@@ -377,14 +433,41 @@
           </button>
         </div>
 
-        <div class="message-box">
-          ${f.message || 'No status message set.'}
+        <!-- Custom Input Area -->
+        <div class="custom-msg-wrapper">
+          <textarea id="customMsgInput" class="custom-msg-input" placeholder="Type your custom status message here...">${f.message || ''}</textarea>
+          <button class="save-msg-btn" id="saveMsgBtn" title="Save Message"><i class="fas fa-save"></i></button>
         </div>
 
         <div class="last-seen">
           <i class="fas fa-history"></i> Last Sync: ${f.lastseen || f.lastSeen || 'Never'}
         </div>
       `;
+
+      // Re-attach event listener for the custom message
+      const newMsgInput = document.getElementById('customMsgInput');
+      const saveBtn = document.getElementById('saveMsgBtn');
+      
+      // Function to save message to Firebase
+      const saveCustomMessage = () => {
+        if (!currentFacultyId) return;
+        const text = newMsgInput.value.trim();
+        const ref = db.ref('faculty/' + currentFacultyId);
+        ref.update({
+          message: text,
+          lastseen: new Date().toLocaleTimeString()
+        }).then(() => {
+          // Visual feedback on save
+          saveBtn.style.color = 'var(--status-available)';
+          setTimeout(() => { saveBtn.style.color = ''; }, 1000);
+        });
+      };
+
+      // Save on blur (clicking away)
+      newMsgInput.addEventListener('blur', saveCustomMessage);
+      
+      // Save on button click
+      saveBtn.addEventListener('click', saveCustomMessage);
     }
 
     loginBtn.addEventListener('click', () => {
@@ -427,8 +510,11 @@
         
         // Listen for updates
         ref.on('value', (snap) => {
-          currentFacultyData = snap.val() || currentFacultyData;
-          renderFacultyPanel();
+          const newData = snap.val();
+          if(newData) {
+            currentFacultyData = newData;
+            renderFacultyPanel();
+          }
         });
 
         renderFacultyPanel();
@@ -443,20 +529,15 @@
     window.updateStatus = function(newStatus) {
       if (!currentFacultyId) return;
 
-      const messages = {
-        available: 'Available for consultation now.',
-        busy: 'Currently in meeting/class.',
-        unavailable: 'Away from desk.'
-      };
-
       const ref = db.ref('faculty/' + currentFacultyId);
+      
+      // NOTE: We are NO LONGER updating the message field here.
+      // This preserves the custom message the user typed.
       ref.update({
         status: newStatus,
-        message: messages[newStatus],
         lastseen: new Date().toLocaleTimeString()
       });
     };
   </script>
 </body>
-
 </html>
