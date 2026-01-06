@@ -32,7 +32,7 @@
       font-family: 'Poppins', sans-serif;
       min-height: 100vh;
       background: radial-gradient(circle at top right, #1c2e4a, #050a14 60%);
-      background-attachment: fixed; /* Parallax ready */
+      background-attachment: fixed;
       color: var(--text-main);
       padding: 20px;
       overflow-x: hidden;
@@ -76,7 +76,6 @@
       overflow: hidden;
     }
 
-    /* Shine effect on header */
     header::after {
       content: '';
       position: absolute;
@@ -210,7 +209,7 @@
     .faculty-avatar {
       width: 60px;
       height: 60px;
-      border-radius: 18px; /* Modern soft square */
+      border-radius: 18px;
       background: rgba(255,255,255,0.1);
       display: flex;
       align-items: center;
@@ -223,7 +222,6 @@
       position: relative;
     }
     
-    /* Avatar inner glow */
     .faculty-avatar::after {
       content: '';
       position: absolute;
@@ -282,7 +280,6 @@
       font-style: normal;
     }
 
-    /* BACK BUTTON */
     .back-btn {
       position: absolute;
       top: 20px;
@@ -312,7 +309,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Back Button -->
     <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
 
     <header>
@@ -336,24 +332,53 @@
     </header>
 
     <div id="facultyGrid" class="faculty-grid">
-      <!-- cards will be injected here -->
+      <!-- Cards injected here -->
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
+  <!-- 1. LOAD FIREBASE SDKs FIRST -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 
+  <!-- 2. YOUR APP LOGIC -->
   <script>
+    // CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYRHFVP6sHvSY2cf99I5nUCFwfYyEruY",
+      authDomain: "campuspulse-ed90f.firebaseapp.com",
+      databaseURL: "https://campuspulse-ed90f-default-rtdb.firebaseio.com",
+      projectId: "campuspulse-ed90f",
+      storageBucket: "campuspulse-ed90f.firebasestorage.app",
+      messagingSenderId: "361434603294",
+      appId: "1:361434603294:web:59723189cd1a96415bf30f",
+      measurementId: "G-Z2CSNPYMVJ"
+    };
 
-    firebase.initializeApp(firebaseConfig);
+    // INITIALIZATION (Fixed: Check for existing app to prevent errors)
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
+    // ELEMENTS
     const facultyGrid = document.getElementById('facultyGrid');
     const availableCountEl = document.getElementById('availableCount');
     const busyCountEl = document.getElementById('busyCount');
     const unavailableCountEl = document.getElementById('unavailableCount');
 
+    // HELPER: Format Timestamp
+    function formatTime(isoString) {
+      if (!isoString) return 'Time: Unknown';
+      // If it's a number (timestamp)
+      if (typeof isoString === 'number') {
+        return new Date(isoString).toLocaleString();
+      }
+      // If it's a string
+      const date = new Date(isoString);
+      return isNaN(date) ? isoString : date.toLocaleString();
+    }
+
+    // RENDER FUNCTION
     function renderFaculty(facultyObj) {
       const entries = Object.entries(facultyObj || {});
 
@@ -372,8 +397,13 @@
         // Get Initials
         const initials = f.name ? f.name.charAt(0).toUpperCase() : id.charAt(0).toUpperCase();
         
-        // Qualifications
-        const quals = Array.isArray(f.qualifications) ? f.qualifications : [];
+        // Handle Qualifications (Check if Array or String)
+        let quals = [];
+        if (Array.isArray(f.qualifications)) {
+          quals = f.qualifications;
+        } else if (f.qualifications && typeof f.qualifications === 'string') {
+          quals = f.qualifications.split(',').map(s => s.trim());
+        }
 
         return `
           <div class="faculty-card">
@@ -401,7 +431,7 @@
               ${f.message || 'Currently no status update.'}
               <span class="message-time">
                 <i class="fas fa-history"></i>
-                ${f.lastSeen ? 'Updated: ' + f.lastSeen : 'Time: Unknown'}
+                ${formatTime(f.lastSeen)}
               </span>
             </div>
           </div>
@@ -409,27 +439,31 @@
       }).join('');
 
       facultyGrid.innerHTML = cardsHtml || '<p style="text-align:center; width:100%; color: #666;">No faculty data found in database.</p>';
+      
+      // Update counts
       availableCountEl.textContent = available;
       busyCountEl.textContent = busy;
       unavailableCountEl.textContent = unavailable;
     }
 
-    // Real-time Listener
+    // REAL-TIME LISTENER
     db.ref('faculty').on('value', (snapshot) => {
       const data = snapshot.val() || {};
       renderFaculty(data);
+    }, (error) => {
+        console.error("Firebase Error:", error);
+        facultyGrid.innerHTML = `<div style="color: #ff4d4d; text-align: center; width: 100%;">
+            Error loading data: ${error.message}<br>
+            <small>Check console for details or verify Database Rules.</small>
+        </div>`;
     });
 
-    // INTERACTIVITY: Parallax Mouse Effect
+    // PARALLAX EFFECT
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth);
       const y = (e.clientY / window.innerHeight);
-      
-      // Move background slightly
       document.body.style.backgroundPosition = `${50 + x * 5}% ${50 + y * 5}%`;
     });
   </script>
 </body>
-
 </html>
-
