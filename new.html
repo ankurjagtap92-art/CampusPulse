@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Seat Booking - Ultimate Edition</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-deep: #02040a;
+            --bg-panel: rgba(18, 24, 38, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            
+            /* Rich Neon Palette */
+            --neon-green: #00ff9d;
+            --neon-green-dim: rgba(0, 255, 157, 0.15);
+            --neon-red: #ff4b4b;
+            --neon-red-dim: rgba(255, 75, 75, 0.15);
+            --neon-blue: #4facfe;
+            --neon-blue-dim: rgba(79, 172, 254, 0.15);
+            --neon-purple: #a55eea;
+            --neon-purple-dim: rgba(165, 94, 234, 0.15);
+            --neon-gold: #ffd32a;
+            --neon-gold-dim: rgba(255, 211, 42, 0.15);
+            --neon-orange: #ff7e5f;
+
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 15px rgba(0, 0, 0, 0.5);
+            
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-deep);
+            /* Deep animated background */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(79, 172, 254, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(165, 94, 234, 0.08), transparent 25%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+            /* FIX: Padding top ensures content doesn't hide behind fixed nav */
+            padding-top: 90px; 
+            /* Subtle Grid Pattern */
+            background-size: 100% 100%, 40px 40px;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(255, 211, 42, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 211, 42, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 211, 42, 0); } }
+
+        /* --- NAVIGATION --- */
+        .top-nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 90px;
+            background: rgba(2, 4, 10, 0.85); backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; z-index: 1000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .logo {
+            font-family: var(--font-head); font-size: 1.8rem; font-weight: 700;
+            color: #fff; display: flex; align-items: center; letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        }
+        .logo i { color: var(--neon-blue); margin-right: 12px; background: -webkit-linear-gradient(0deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .nav-controls { display: flex; gap: 25px; align-items: center; }
+
+        .mode-switcher { 
+            display: flex; gap: 8px; 
+            background: rgba(255,255,255,0.03); 
+            padding: 6px; border-radius: 50px; 
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .mode-btn {
+            padding: 10px 28px; border: none; border-radius: 40px; font-weight: 600;
+            font-size: 0.9rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-family: var(--font-head); display: flex; align-items: center; gap: 8px;
+            background: transparent; color: #6c7a89;
+            position: relative; overflow: hidden;
+        }
+        .mode-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        
+        .mode-btn.active { 
+            color: #fff; transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+        }
+        .mode-student.active { 
+            background: linear-gradient(135deg, var(--neon-green), #05c46b); 
+            color: #000; box-shadow: 0 0 20px var(--neon-green-dim); 
+        }
+        .mode-admin.active { 
+            background: linear-gradient(135deg, var(--neon-purple), #8854d0); 
+            color: #fff; box-shadow: 0 0 20px var(--neon-purple-dim); 
+        }
+
+        /* Data View Button - Rich Style */
+        .btn-data-view {
+            padding: 10px 24px; border-radius: 12px; border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); background: rgba(79, 172, 254, 0.05); cursor: pointer; 
+            transition: all 0.3s; font-weight: 600; font-family: var(--font-head);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-data-view:hover { 
+            background: var(--neon-blue); color: #fff; 
+            box-shadow: 0 0 25px var(--neon-blue); transform: translateY(-2px); 
+        }
+
+        /* --- STATS HEADER --- */
+        header {
+            position: sticky; top: 90px;
+            width: 100%; background: rgba(2, 4, 10, 0.85);
+            backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2.5rem; display: flex; justify-content: center; align-items: center;
+            /* FIX: Increased margin to separate from tables */
+            margin-bottom: 3.5rem; 
+            z-index: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .stats-bar { display: flex; gap: 30px; }
+        .stat { 
+            display: flex; align-items: center; gap: 12px; 
+            background: rgba(255,255,255,0.03); padding: 10px 25px; border-radius: 50px; 
+            border: 1px solid var(--glass-border); 
+            color: #fff; font-weight: 600; font-family: var(--font-head);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .stat:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+        .dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+
+        /* --- DATA PAGE --- */
+        .data-page {
+            display: none; width: 90%; max-width: 1200px; margin: 120px auto 50px;
+            background: var(--bg-panel); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 40px; backdrop-filter: blur(25px);
+            min-height: 60vh; box-shadow: var(--shadow-soft);
+            animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; z-index: 950; /* Ensure above map */
+        }
+        .data-page.active { display: block; }
+
+        .data-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+        .data-header h2 { font-family: var(--font-head); font-size: 2rem; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue-dim); }
+        
+        .data-table {
+            width: 100%; border-collapse: collapse; color: #fff;
+        }
+        .data-table th { text-align: left; padding: 20px; color: #a4b0be; border-bottom: 1px solid rgba(255,255,255,0.1); font-family: var(--font-head); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .data-table td { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.03); font-weight: 500; }
+        
+        .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-confirmed { background: rgba(0, 255, 157, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); box-shadow: 0 0 10px var(--neon-green-dim); }
+        .status-pending { background: rgba(255, 211, 42, 0.15); color: var(--neon-gold); border: 1px solid var(--neon-gold); box-shadow: 0 0 10px var(--neon-gold-dim); }
+        .status-expired { background: rgba(255, 75, 75, 0.15); color: var(--neon-red); border: 1px solid var(--neon-red); text-decoration: line-through; opacity: 0.7; }
+
+        /* --- MAIN MAP VIEW --- */
+        .library-map {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem; padding: 2rem 4rem; width: 100%; max-width: 1600px;
+            margin-bottom: 6rem;
+            /* FIX: Extra margin top ensures it doesn't stick to header */
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+            perspective: 1000px; /* Enable 3D space */
+        }
+        .library-map.hidden { display: none; opacity: 0; }
+
+        /* --- LOGIN MODAL --- */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; pointer-events: none; transition: all 0.4s ease;
+        }
+        .login-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .login-box {
+            background: linear-gradient(145deg, #1e2736, #111622);
+            border: 1px solid var(--neon-purple); 
+            box-shadow: 0 0 40px rgba(165, 94, 234, 0.2), inset 0 0 20px rgba(0,0,0,0.5);
+            padding: 3.5rem; border-radius: 30px;
+            width: 90%; max-width: 420px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        /* Decorative circle */
+        .login-box::before {
+            content:''; position: absolute; top:-50px; left:-50px; width: 150px; height: 150px;
+            background: var(--neon-purple); filter: blur(80px); opacity: 0.4;
+        }
+
+        .login-box h2 { color: var(--neon-purple); font-family: var(--font-head); margin-bottom: 2.5rem; font-size: 1.8rem; letter-spacing: 1px; }
+        .login-box input {
+            width: 100%; padding: 18px; margin-bottom: 1.8rem; border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: #fff;
+            font-size: 1.1rem; text-align: center; transition: 0.3s;
+            font-family: var(--font-body);
+        }
+        .login-box input:focus { border-color: var(--neon-purple); box-shadow: 0 0 15px var(--neon-purple-dim); }
+        
+        .login-btn {
+            width: 100%; padding: 18px; 
+            background: linear-gradient(135deg, var(--neon-purple), #8854d0);
+            color: #fff; border: none; border-radius: 16px; font-weight: 700; cursor: pointer;
+            transition: 0.3s; letter-spacing: 1px; font-family: var(--font-head);
+            box-shadow: 0 10px 20px rgba(136, 84, 208, 0.3);
+        }
+        .login-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(136, 84, 208, 0.5); }
+        
+        .close-login { margin-top: 2rem; background: none; border: none; color: #6c7a89; cursor: pointer; font-size: 0.9rem; transition: 0.3s; font-weight: 500; }
+        .close-login:hover { color: #fff; }
+
+        /* --- ADMIN CONTROLS --- */
+        .admin-controls {
+            display: none; 
+            background: linear-gradient(135deg, rgba(20, 25, 40, 0.9), rgba(10, 15, 25, 0.9));
+            border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 24px;
+            padding: 1.5rem 2.5rem; margin: 0 auto 3rem; 
+            width: 90%; max-width: 900px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px);
+            position: relative; overflow: hidden;
+            z-index: 900;
+        }
+        .admin-controls.active { display: block; animation: slideDown 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        
+        .control-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: center; position: relative; z-index: 2; }
+        
+        .admin-btn {
+            padding: 14px 28px; border-radius: 14px; cursor: pointer; font-weight: 700; 
+            font-family: var(--font-head); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px;
+            color: #fff; border: none; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;
+        }
+        .btn-add { background: linear-gradient(135deg, #00b894, #00cec9); box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4); }
+        .btn-add:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 25px rgba(0, 184, 148, 0.6); }
+
+        .btn-remove { background: linear-gradient(135deg, #ff7675, #d63031); box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4); }
+        .btn-remove:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 25px rgba(214, 48, 49, 0.6); }
+
+        .btn-logout { background: linear-gradient(135deg, #6c5ce7, #a29bfe); margin-left: auto; box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4); }
+        .btn-logout:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(108, 92, 231, 0.6); }
+
+        /* --- TABLES & SEATS --- */
+        .table-group {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 30px; position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column; align-items: center;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+        }
+        .table-group:hover {
+            transform: translateY(-10px) rotateX(2deg);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        
+        .table-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; z-index: 2; }
+        .table-id { font-size: 1.5rem; font-weight: 700; color: #fff; font-family: var(--font-head); letter-spacing: 1px; }
+        
+        /* Subtle mesh bg for table */
+        .table-group::after {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .seats-row { display: flex; gap: 20px; justify-content: center; width: 100%; margin-bottom: 20px; z-index: 2; }
+        .seats-row:last-child { margin-bottom: 0; margin-top: 25px; }
+
+        .table-surface {
+            width: 90%; height: 70px; border-radius: 16px; 
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); position: relative; z-index: 1;
+            backdrop-filter: blur(5px);
+        }
+        .table-surface i { font-size: 1.5rem; color: rgba(255,255,255,0.2); }
+
+        /* --- SEAT STYLES (Interactive) --- */
+        .seat {
+            width: 60px; height: 60px; border-radius: 16px;
+            background: rgba(20, 25, 40, 0.8); border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; color: #636e72;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .seat:hover { transform: scale(1.2) translateY(-5px); z-index: 20; border-color: #fff; }
+
+        /* Available */
+        .seat.available { 
+            color: var(--neon-green); 
+            border-color: rgba(0, 255, 157, 0.2); 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .seat.available:hover { 
+            background: var(--neon-green); color: #000; 
+            box-shadow: 0 0 30px var(--neon-green); 
+        }
+
+        /* Occupied */
+        .seat.occupied { 
+            color: var(--neon-red); 
+            border-color: rgba(255, 75, 75, 0.2);
+        }
+        .seat.occupied:hover { 
+            background: var(--neon-red); color: #fff; 
+            box-shadow: 0 0 30px var(--neon-red); 
+        }
+
+        /* Pre-Booked (Gold) */
+        .seat.booked {
+            color: var(--neon-gold);
+            border-color: var(--neon-gold);
+            box-shadow: 0 0 15px var(--neon-gold-dim);
+            animation: pulseGlow 2s infinite;
+        }
+        .seat.booked:hover { 
+            background: var(--neon-gold); color: #000; 
+            box-shadow: 0 0 40px var(--neon-gold); 
+            animation: none; /* Stop pulse on hover */
+        }
+
+        /* --- ACTION MODAL --- */
+        .action-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 3000; opacity: 0; pointer-events: none; transition: all 0.3s;
+        }
+        .action-modal.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background: #1e2736; border: 1px solid rgba(255,255,255,0.1);
+            padding: 3rem; border-radius: 30px; width: 90%; max-width: 450px; text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+            transform: scale(0.8) translateY(20px); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .action-modal.active .modal-content { transform: scale(1) translateY(0); }
+        
+        /* Dynamic Border Top based on title color */
+        .modal-content::before {
+            content:''; position: absolute; top:0; left:0; width:100%; height:4px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        }
+
+        .modal-content h3 { color: #fff; margin-bottom: 10px; font-family: var(--font-head); font-size: 1.8rem; }
+        .modal-content p { color: #a4b0be; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.5; }
+        
+        .input-group { text-align: left; margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; color: #a4b0be; font-size: 0.8rem; margin-bottom: 8px; margin-left: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .modal-input { 
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); color: #fff; 
+            border-radius: 12px; font-size: 1rem; font-family: var(--font-body);
+            transition: 0.3s; 
+        }
+        .modal-input:focus { border-color: var(--neon-blue); background: rgba(0,0,0,0.5); box-shadow: 0 0 15px var(--neon-blue-dim); }
+        
+        .modal-actions { display: flex; gap: 15px; justify-content: center; margin-top: 35px; }
+        .btn-modal { 
+            padding: 14px 30px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; 
+            font-family: var(--font-head); transition: all 0.3s; font-size: 0.95rem; 
+        }
+        
+        .btn-confirm { 
+            background: linear-gradient(135deg, var(--neon-blue), #0984e3); 
+            color: #fff; box-shadow: 0 5px 20px rgba(9, 132, 227, 0.4); 
+        }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(9, 132, 227, 0.6); }
+        
+        .btn-danger { 
+            background: linear-gradient(135deg, var(--neon-red), #d63031); 
+            color: #fff; box-shadow: 0 5px 20px rgba(214, 48, 49, 0.4); 
+        }
+        .btn-danger:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(214, 48, 49, 0.6); }
+        
+        .btn-cancel { 
+            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; 
+        }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 39, 54, 0.95); border-left: 5px solid var(--neon-blue);
+            color: #fff; padding: 18px 35px; border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3); 
+            transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 5000;
+            font-weight: 500; display: flex; align-items: center; gap: 15px; 
+            backdrop-filter: blur(15px);
+            font-size: 0.95rem; min-width: 300px;
+        }
+        .toast i { font-size: 1.2rem; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="top-nav">
+        <div class="logo">
+            <i class="fas fa-cube"></i> Smart<span style="color:var(--neon-blue)">Library</span>
+        </div>
+        <div class="nav-controls">
+            <button class="btn-data-view" id="btn-data-view" onclick="toggleDataView()">
+                <i class="fas fa-chart-pie"></i> Booking Data
+            </button>
+            <div class="mode-switcher">
+                <button class="mode-btn mode-student active" id="btn-student">
+                    <i class="fas fa-user-astronaut"></i> Student
+                </button>
+                <button class="mode-btn mode-admin" id="btn-admin">
+                    <i class="fas fa-user-secret"></i> Admin
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LOGIN MODAL -->
+    <div class="login-overlay" id="login-modal">
+        <div class="login-box">
+            <h2><i class="fas fa-fingerprint"></i> Admin Access</h2>
+            <input type="password" id="password-input" placeholder="Enter Passcode">
+            <button class="login-btn" id="btn-login-submit">Unlock Dashboard</button>
+            <button class="close-login" id="btn-login-cancel">Return to Student View</button>
+        </div>
+    </div>
+
+    <!-- STATS HEADER -->
+    <header>
+        <div class="stats-bar">
+            <div class="stat"><span class="dot" style="background:var(--neon-green)"></span> Available: <span id="avail-count">0</span></div>
+            <div class="stat"><span class="dot" style="background:var(--neon-gold)"></span> Pre-Booked: <span id="booked-count">0</span></div>
+            <div class="stat"><span class="dot" style="background:var(--neon-red)"></span> Occupied: <span id="occupied-count">0</span></div>
+        </div>
+    </header>
+
+    <!-- DATA PAGE -->
+    <section class="data-page" id="data-page">
+        <div class="data-header">
+            <h2><i class="fas fa-database"></i> Live Booking Data</h2>
+            <button class="btn-modal btn-cancel" onclick="toggleDataView()">Close View</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Seat</th>
+                        <th>Student Name</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ADMIN CONTROLS -->
+    <div class="admin-controls" id="admin-panel">
+        <div style="text-align: center; margin-bottom: 25px; color: var(--neon-orange); font-family: var(--font-head); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;">
+            <i class="fas fa-sliders-h"></i> Control Center
+        </div>
+        <div class="control-row">
+            <input type="number" id="new-table-seats" class="modal-input" value="4" min="1" max="12" style="width: 100px; text-align: center;">
+            <button class="admin-btn btn-add" id="btn-add-table"><i class="fas fa-plus"></i> Add Table</button>
+            <button class="admin-btn btn-remove" id="btn-remove-table"><i class="fas fa-minus"></i> Remove Last</button>
+            <button class="admin-btn btn-logout" id="btn-logout"><i class="fas fa-power-off"></i> Logout</button>
+        </div>
+    </div>
+
+    <!-- MAIN MAP -->
+    <main class="library-map" id="library-map">
+        <!-- Tables generated by JS -->
+    </main>
+
+    <!-- MODAL FOR ACTIONS -->
+    <div class="action-modal" id="action-modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Action</h3>
+            <p id="modal-desc">Description.</p>
+            
+            <div id="modal-form">
+                <div class="input-group">
+                    <label>Student Name / ID</label>
+                    <input type="text" id="occupant-name" class="modal-input" placeholder="e.g. John Doe">
+                </div>
+                <!-- Time Slot Inputs -->
+                <div class="input-group" id="time-slot-group" style="display: flex; gap: 15px;">
+                    <div style="flex:1;">
+                        <label>Start Time</label>
+                        <input type="time" id="start-time" class="modal-input">
+                    </div>
+                    <div style="flex:1;">
+                        <label>End Time</label>
+                        <input type="time" id="end-time" class="modal-input">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-modal btn-cancel" id="modal-cancel">Cancel</button>
+                <button class="btn-modal btn-confirm" id="modal-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast-msg">
+        <i class="fas fa-info-circle"></i> <span>Notification</span>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const ADMIN_PASS = "admin123";
+        const CHECK_IN_WINDOW_MINUTES = 15; 
+        // Visibility window for pre-bookings (4 hours)
+        const PREBOOK_SHOW_WINDOW_MINUTES = 240; 
+
+        let state = {
+            isAdmin: false,
+            tables: [], 
+            currentView: 'map', 
+            activeSeat: null,
+            activeBooking: null, 
+            modalMode: 'book' // 'book', 'checkin', 'admin_release'
+        };
+
+        const dom = {
+            body: document.body,
+            map: document.getElementById('library-map'),
+            dataPage: document.getElementById('data-page'),
+            dataTableBody: document.getElementById('data-table-body'),
+            modal: document.getElementById('action-modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalDesc: document.getElementById('modal-desc'),
+            occupantInput: document.getElementById('occupant-name'),
+            startTimeInput: document.getElementById('start-time'),
+            endTimeInput: document.getElementById('end-time'),
+            timeSlotGroup: document.getElementById('time-slot-group'),
+            btnConfirm: document.getElementById('modal-confirm'),
+            btnCancel: document.getElementById('modal-cancel'),
+            btnStudent: document.getElementById('btn-student'),
+            btnAdmin: document.getElementById('btn-admin'),
+            loginModal: document.getElementById('login-modal'),
+            passInput: document.getElementById('password-input'),
+            btnLogin: document.getElementById('btn-login-submit'),
+            btnLoginCancel: document.getElementById('btn-login-cancel'),
+            adminPanel: document.getElementById('admin-panel'),
+            btnAddTable: document.getElementById('btn-add-table'),
+            btnRemoveTable: document.getElementById('btn-remove-table'),
+            btnLogout: document.getElementById('btn-logout'),
+            availCount: document.getElementById('avail-count'),
+            bookedCount: document.getElementById('booked-count'),
+            occupiedCount: document.getElementById('occupied-count'),
+            toast: document.getElementById('toast-msg')
+        };
+
+        function init() {
+            loadData();
+            renderLibrary();
+            renderDataPage();
+            updateStats();
+            setupEventListeners();
+            
+            // Time Check Loop (Every 10 seconds)
+            setInterval(timeCheckLoop, 10000);
+        }
+
+        function setupEventListeners() {
+            dom.btnStudent.addEventListener('click', () => switchMode('student'));
+            dom.btnAdmin.addEventListener('click', () => switchMode('admin'));
+            dom.btnLogin.addEventListener('click', attemptLogin);
+            dom.loginModal.addEventListener('click', (e) => { if(e.target === dom.loginModal) switchMode('student'); });
+            dom.btnLoginCancel.addEventListener('click', () => switchMode('student'));
+            dom.btnAddTable.addEventListener('click', addTable);
+            dom.btnRemoveTable.addEventListener('click', removeTable);
+            dom.btnLogout.addEventListener('click', logout);
+            dom.btnCancel.addEventListener('click', closeModal);
+            dom.btnConfirm.addEventListener('click', handleModalConfirm);
+        }
+
+        // --- CORE DATA LOGIC ---
+        function loadData() {
+            const stored = localStorage.getItem('libraryData_v4');
+            if (stored) {
+                state.tables = JSON.parse(stored);
+            } else {
+                for(let i=1; i<=3; i++) {
+                    state.tables.push({ 
+                        id: i, 
+                        seats: Array.from({length: 4}, (_, j) => ({ 
+                            id: j+1, 
+                            bookings: [] 
+                        })) 
+                    });
+                }
+                saveData();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('libraryData_v4', JSON.stringify(state.tables));
+            updateStats();
+            if(state.currentView === 'data') renderDataPage();
+        }
+
+        // --- TIME & DATE HELPERS ---
+        function getISOFromTimeInput(timeStr) {
+            const now = new Date();
+            const [hours, minutes] = timeStr.split(':');
+            now.setHours(hours, minutes, 0, 0);
+            return now.toISOString();
+        }
+
+        function formatTime(isoString) {
+            const d = new Date(isoString);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // --- VISIBILITY LOGIC ---
+        function getActiveBooking(seat) {
+            const now = new Date();
+
+            // 1. Occupied: 
+            const confirmed = seat.bookings.find(b => 
+                b.status === 'confirmed' && 
+                new Date(b.endTimeISO) >= now
+            );
+            if (confirmed) return { type: 'occupied', booking: confirmed };
+
+            // 2. Booked (Gold): Pending booking within window
+            const pending = seat.bookings.find(b => {
+                if (b.status !== 'pending') return false;
+                const start = new Date(b.startTimeISO);
+                const earliestShow = new Date(start.getTime() - PREBOOK_SHOW_WINDOW_MINUTES * 60000);
+                const latestShow = new Date(start.getTime() + CHECK_IN_WINDOW_MINUTES * 60000);
+                return now >= earliestShow && now <= latestShow;
+            });
+            
+            if (pending) return { type: 'booked', booking: pending };
+
+            return { type: 'available', booking: null };
+        }
+
+        // --- AUTO-CANCELLATION & TIME CHECK ---
+        function timeCheckLoop() {
+            const now = new Date();
+            let changed = false;
+
+            state.tables.forEach(table => {
+                table.seats.forEach(seat => {
+                    seat.bookings.forEach(booking => {
+                        const startTime = new Date(booking.startTimeISO);
+                        
+                        if (booking.status === 'pending') {
+                            const deadline = new Date(startTime.getTime() + CHECK_IN_WINDOW_MINUTES * 60000);
+                            if (now > deadline) {
+                                booking.status = 'expired'; 
+                                changed = true;
+                            }
+                        }
+                        
+                        if (booking.status === 'confirmed') {
+                            const endTime = new Date(booking.endTimeISO);
+                            if (now > endTime) {
+                                booking.status = 'completed'; 
+                                changed = true;
+                            }
+                        }
+                    });
+                    
+                    seat.bookings = seat.bookings.filter(b => {
+                        if(b.status === 'completed' || b.status === 'expired') {
+                            const bTime = new Date(b.startTimeISO);
+                            return (now - bTime) < 86400000; 
+                        }
+                        return true;
+                    });
+                });
+            });
+
+            if (changed) {
+                saveData();
+                renderLibrary();
+                renderDataPage();
+                showToast("Auto-check: Some bookings updated.", "info");
+            }
+        }
+
+        // --- VIEW LOGIC ---
+        function switchMode(mode) {
+            if (mode === 'admin') {
+                if (state.isAdmin) enableAdminView();
+                else {
+                    dom.loginModal.classList.add('active');
+                    dom.passInput.value = '';
+                    dom.passInput.focus();
+                }
+            } else {
+                enableStudentView();
+            }
+        }
+
+        function toggleDataView() {
+            if (state.currentView === 'map') {
+                state.currentView = 'data';
+                dom.map.classList.add('hidden');
+                dom.dataPage.classList.add('active');
+                renderDataPage();
+            } else {
+                state.currentView = 'map';
+                dom.dataPage.classList.remove('active');
+                dom.map.classList.remove('hidden');
+            }
+        }
+
+        function enableAdminView() {
+            state.isAdmin = true;
+            dom.loginModal.classList.remove('active');
+            dom.btnAdmin.classList.add('active');
+            dom.btnStudent.classList.remove('active');
+            dom.adminPanel.classList.add('active');
+            renderLibrary();
+        }
+
+        function enableStudentView() {
+            state.isAdmin = false;
+            dom.loginModal.classList.remove('active');
+            dom.btnStudent.classList.add('active');
+            dom.btnAdmin.classList.remove('active');
+            dom.adminPanel.classList.remove('active');
+            renderLibrary();
+        }
+
+        function attemptLogin() {
+            const pass = dom.passInput.value;
+            if (pass === ADMIN_PASS) {
+                state.isAdmin = true;
+                dom.loginModal.classList.remove('active');
+                enableAdminView();
+                showToast("Admin Access Granted.", "success");
+            } else {
+                showToast("Incorrect Password.", "error");
+                dom.passInput.value = '';
+            }
+        }
+
+        function logout() {
+            state.isAdmin = false;
+            enableStudentView();
+            showToast("Logged out.", "info");
+        }
+
+        // --- RENDER LOGIC ---
+        function renderLibrary() {
+            dom.map.innerHTML = '';
+            
+            state.tables.forEach((table, tIdx) => {
+                const el = document.createElement('div');
+                el.className = 'table-group';
+
+                const midPoint = Math.ceil(table.seats.length / 2);
+                const topArr = table.seats.slice(0, midPoint);
+                const botArr = table.seats.slice(midPoint);
+                
+                const renderRow = (arr) => arr.map((s, i) => {
+                     const originalIndex = arr === topArr ? i : i + midPoint;
+                     const active = getActiveBooking(s);
+                     let cls = 'available';
+                     let content = s.id;
+                     let tooltip = "Available - Click to Book";
+                     
+                     if(active.type === 'booked') { 
+                         cls = 'booked'; 
+                         content = '<i class="fas fa-clock"></i>'; 
+                         tooltip = `Pre-Booked (Click to Check In)`;
+                     }
+                     if(active.type === 'occupied') { 
+                         cls = 'occupied'; 
+                         content = '<i class="fas fa-user"></i>'; 
+                         tooltip = `Occupied`;
+                     }
+                     
+                     return `<div class="seat ${cls}" onclick="handleSeatClick(${tIdx}, ${originalIndex})" title="${tooltip}">${content}</div>`;
+                }).join('');
+
+                el.innerHTML = `
+                    <div class="table-header">
+                        <span class="table-id">Table ${table.id}</span>
+                    </div>
+                    <div class="seats-row">${renderRow(topArr)}</div>
+                    <div class="table-surface"><i class="fas fa-chair"></i></div>
+                    <div class="seats-row">${renderRow(botArr)}</div>
+                `;
+                dom.map.appendChild(el);
+            });
+        }
+
+        function renderDataPage() {
+            dom.dataTableBody.innerHTML = '';
+            let rows = 0;
+
+            state.tables.forEach((table, tIdx) => {
+                table.seats.forEach((seat, sIdx) => {
+                    const relevantBookings = seat.bookings.filter(b => 
+                        ['pending', 'confirmed'].includes(b.status)
+                    );
+
+                    relevantBookings.forEach(booking => {
+                        rows++;
+                        const tr = document.createElement('tr');
+                        
+                        let statusClass = '';
+                        if(booking.status === 'confirmed') statusClass = 'status-confirmed';
+                        else if(booking.status === 'pending') statusClass = 'status-pending';
+                        else statusClass = 'status-expired';
+
+                        const timeStr = `${formatTime(booking.startTimeISO)} - ${formatTime(booking.endTimeISO)}`;
+                        const actionBtn = state.isAdmin ? `<button class="btn-modal btn-danger" style="padding:6px 12px; font-size:0.8rem; border-radius:6px;" onclick="handleAdminCancel(${tIdx}, ${sIdx}, '${booking.id}')">Cancel</button>` : '-';
+
+                        tr.innerHTML = `
+                            <td><strong>${table.id}</strong></td>
+                            <td>${seat.id}</td>
+                            <td>${booking.name}</td>
+                            <td>${timeStr}</td>
+                            <td><span class="status-badge ${statusClass}">${booking.status}</span></td>
+                            <td>${actionBtn}</td>
+                        `;
+                        dom.dataTableBody.appendChild(tr);
+                    });
+                });
+            });
+
+            if(rows === 0) {
+                dom.dataTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#636e72;">No active bookings found in the system.</td></tr>';
+            }
+        }
+
+        function updateStats() {
+            let avail = 0, booked = 0, occupied = 0;
+            const now = new Date();
+
+            state.tables.forEach(table => {
+                table.seats.forEach(seat => {
+                    const active = getActiveBooking(seat);
+                    if(active.type === 'available') avail++;
+                    else if(active.type === 'booked') booked++;
+                    else if(active.type === 'occupied') occupied++;
+                });
+            });
+
+            dom.availCount.textContent = avail;
+            dom.bookedCount.textContent = booked;
+            dom.occupiedCount.textContent = occupied;
+        }
+
+        // --- INTERACTION LOGIC ---
+        window.handleSeatClick = function(tIdx, sIdx) {
+            const seat = state.tables[tIdx].seats[sIdx];
+            const active = getActiveBooking(seat);
+            state.activeSeat = { tIdx, sIdx, seatObj: seat };
+
+            if (state.isAdmin) {
+                if (active.booking) {
+                    state.activeBooking = active.booking;
+                    openModal('admin_release');
+                } else {
+                    showToast("Seat is available. Students must book it.", "info");
+                }
+            } else {
+                if (active.type === 'available') {
+                    openModal('book');
+                } else if (active.type === 'booked') {
+                    const now = new Date();
+                    const start = new Date(active.booking.startTimeISO);
+                    const diffMin = (now - start) / 60000;
+
+                    if (diffMin >= -CHECK_IN_WINDOW_MINUTES) {
+                        state.activeBooking = active.booking;
+                        openModal('checkin');
+                    } else {
+                        const minsLeft = Math.abs(Math.floor(diffMin));
+                        showToast(`Check-in opens in ${minsLeft} minutes.`, "error");
+                    }
+                } else if (active.type === 'occupied') {
+                    showToast(`Seat occupied by ${active.booking.name}.`, "info");
+                }
+            }
+        };
+
+        function openModal(mode) {
+            state.modalMode = mode;
+            dom.modal.classList.add('active');
+            dom.occupantInput.value = '';
+            dom.startTimeInput.value = '';
+            dom.endTimeInput.value = '';
+
+            if (mode === 'book') {
+                dom.modalTitle.textContent = "Pre-Book Seat";
+                dom.modalTitle.style.color = "var(--neon-gold)";
+                dom.modalDesc.textContent = "Select your time slot. You must check in within 15 mins of start time.";
+                dom.occupantInput.style.display = 'block';
+                dom.timeSlotGroup.style.display = 'flex';
+                dom.btnConfirm.textContent = "Book Seat";
+                dom.btnConfirm.className = "btn-modal btn-confirm";
+                const now = new Date();
+                now.setMinutes(0);
+                now.setHours(now.getHours() + 1);
+                dom.startTimeInput.value = now.toTimeString().substring(0,5);
+                now.setHours(now.getHours() + 2);
+                dom.endTimeInput.value = now.toTimeString().substring(0,5);
+            } 
+            else if (mode === 'checkin') {
+                const booking = state.activeBooking;
+                dom.modalTitle.textContent = "Check In";
+                dom.modalTitle.style.color = "var(--neon-green)";
+                dom.modalDesc.textContent = `Confirm attendance for ${booking.name}?`;
+                dom.occupantInput.style.display = 'none';
+                dom.timeSlotGroup.style.display = 'none';
+                dom.btnConfirm.textContent = "Confirm Arrival";
+                dom.btnConfirm.className = "btn-modal btn-confirm";
+            } 
+            else if (mode === 'admin_release') {
+                const booking = state.activeBooking;
+                dom.modalTitle.textContent = "Release Seat";
+                dom.modalTitle.style.color = "var(--neon-red)";
+                dom.modalDesc.textContent = `Cancel booking for ${booking.name}?`;
+                dom.occupantInput.style.display = 'none';
+                dom.timeSlotGroup.style.display = 'none';
+                dom.btnConfirm.textContent = "Release";
+                dom.btnConfirm.className = "btn-modal btn-danger";
+            }
+        }
+
+        function closeModal() {
+            dom.modal.classList.remove('active');
+            state.activeSeat = null;
+            state.activeBooking = null;
+        }
+
+        function handleModalConfirm() {
+            const { tIdx, sIdx, seatObj } = state.activeSeat;
+
+            if (state.modalMode === 'book') {
+                const name = dom.occupantInput.value.trim();
+                const startStr = dom.startTimeInput.value;
+                const endStr = dom.endTimeInput.value;
+
+                if (!name || !startStr || !endStr) return showToast("Please fill all fields.", "error");
+                if (startStr >= endStr) return showToast("End time must be after start time.", "error");
+
+                const newStart = getISOFromTimeInput(startStr);
+                const newEnd = getISOFromTimeInput(endStr);
+                
+                const overlap = seatObj.bookings.some(b => {
+                    if(b.status === 'expired' || b.status === 'completed') return false;
+                    return (newStart < b.endTimeISO && newEnd > b.startTimeISO);
+                });
+
+                if(overlap) return showToast("Time slot overlaps with existing booking.", "error");
+
+                const newBooking = {
+                    id: Date.now().toString(),
+                    name: name,
+                    startTimeISO: newStart,
+                    endTimeISO: newEnd,
+                    status: 'pending'
+                };
+
+                seatObj.bookings.push(newBooking);
+                showToast("Seat Pre-booked! Please arrive on time.", "success");
+            } 
+            else if (state.modalMode === 'checkin') {
+                const now = new Date();
+                const start = new Date(state.activeBooking.startTimeISO);
+                const diffMin = (now - start) / 60000;
+
+                if (diffMin < -CHECK_IN_WINDOW_MINUTES) {
+                    showToast("It is too early to check in.", "error");
+                    closeModal();
+                    return;
+                }
+
+                state.activeBooking.status = 'confirmed';
+                showToast("Checked in successfully.", "success");
+            } 
+            else if (state.modalMode === 'admin_release') {
+                state.activeBooking.status = 'expired'; 
+                showToast("Booking cancelled by admin.", "info");
+            }
+
+            saveData();
+            renderLibrary();
+            renderDataPage();
+            closeModal();
+        }
+
+        window.handleAdminCancel = function(tIdx, sIdx, bookingId) {
+            if(!state.isAdmin) return;
+            const seat = state.tables[tIdx].seats[sIdx];
+            const booking = seat.bookings.find(b => b.id === bookingId);
+            if(booking) {
+                booking.status = 'expired';
+                saveData();
+                renderLibrary();
+                renderDataPage();
+                showToast("Booking cancelled.", "info");
+            }
+        };
+
+        function addTable() {
+            const count = parseInt(document.getElementById('new-table-seats').value) || 4;
+            const newId = state.tables.length > 0 ? Math.max(...state.tables.map(t => t.id)) + 1 : 1;
+            state.tables.push({ id: newId, seats: Array.from({length: count}, (_, j) => ({ id: j+1, bookings: [] })) });
+            saveData();
+            renderLibrary();
+            showToast("Table added successfully.", "success");
+        }
+
+        function removeTable() {
+            if(state.tables.length === 0) return showToast("No tables to remove.", "error");
+            state.tables.pop();
+            saveData();
+            renderLibrary();
+            showToast("Table removed.", "info");
+        }
+
+        function showToast(msg, type) {
+            const toast = dom.toast;
+            toast.querySelector('span').textContent = msg;
+            
+            // Reset classes
+            toast.style.borderLeftColor = 'var(--neon-blue)';
+            let iconClass = 'fa-info-circle';
+            
+            if(type === 'error') {
+                toast.style.borderLeftColor = 'var(--neon-red)';
+                iconClass = 'fa-exclamation-circle';
+            }
+            else if(type === 'success') {
+                toast.style.borderLeftColor = 'var(--neon-green)';
+                iconClass = 'fa-check-circle';
+            }
+            
+            toast.querySelector('i').className = `fas ${iconClass}`;
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
